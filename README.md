@@ -1,4 +1,4 @@
-<p align="center"><img width="150" src="https://raw.githubusercontent.com/putyourlightson/craft-spark/develop/src/icon.svg"></p>
+<p align="center"><img width="150" src="[https://raw.githubusercontent.com/putyourlightson/craft-spark/develop/src/icon.svg](https://raw.githubusercontent.com/putyourlightson/craft-spark/refs/heads/develop/src/icon.svg?token=GHSAT0AAAAAABUEIQTWQHGWPSK4IG7LEOUWZYMBAMQ)"></p>
 
 # Spark Plugin for Craft CMS
 
