@@ -30,7 +30,7 @@ composer require putyourlightson/craft-spark
 
 ## Usage
 
-Creates a data store with initial data and a button that refreshes the markup using the provided template path.
+Creates a data store with initial data and a button that makes a `GET` request to the server and swaps the rendered template into the DOM on click.
 
 ```twig
 <div data-store="{ version: 'Alpha' }">
@@ -45,20 +45,18 @@ Creates a data store with initial data and a button that refreshes the markup us
 </div>
 ```
 
-Contains new markup and updates the data store with new values.
+Contains an element that will be swapped into the DOM based on its ID.
 
 ```twig
 {# _spark/main.twig #}
 
 <div id="main">
     Next version:
-    <input type="text" data-model="version">
+    <input type="text" data-model="version" value="Beta">
 </div>
-
-{% do spark.signal({ version: 'Beta' }) %}
 ```
 
-### Template Variable Methods
+### Template Variables
 
 #### `spark.get()`
 
