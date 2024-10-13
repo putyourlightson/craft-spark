@@ -4,9 +4,9 @@
 
 ### A reactive hypermedia framework for Craft CMS.
 
-Spark provides an integration between Craft CMS and [Datastar](https://data-star.dev), a JavaScript library that combines the features of [Alpine JS](https://alpinejs.dev/) with those of [htmx](https://htmx.org/). It advocates hypermedia-driven apps, meaning that you won’t find history support, JavaScript execution in responses, nor any other “bells and whistles”. This is intentional. By embracing the simplicity of hypermedia and the power of web components (natively or using [Lit](https://lit.dev/)), you can build highly performant and scalable apps.
+Spark provides an integration between Craft CMS and [Datastar](https://data-star.dev), a JavaScript library that combines the core functionality of [Alpine JS](https://alpinejs.dev/) with that of [htmx](https://htmx.org/). It advocates a hypermedia-first approach, meaning that you won’t find history support, JavaScript execution in responses, nor any other “bells and whistles”. This is intentional. By embracing the simplicity of hypermedia, the encapsulation of web components (natively or using [Lit](https://lit.dev/)) and the optimised DOM operations of web broswers, you can build highly performant, hypermedia-driven web apps, without requiring a full-blown JavaScript framework.
 
-Read the [Getting Started](https://data-star.dev/guide/getting_started) guide for Datastar.
+Read the [getting started guide](https://data-star.dev/guide/getting_started) for Datastar.
 
 > [!WARNING]  
 > **This plugin is experimental and its API is likely to change – do _not_ use in production!**  
