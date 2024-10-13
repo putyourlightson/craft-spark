@@ -6,7 +6,7 @@
 
 Spark provides an integration between Craft CMS and [Datastar](https://data-star.dev), a JavaScript library that combines the core functionality of [Alpine JS](https://alpinejs.dev/) with that of [htmx](https://htmx.org/). It advocates a hypermedia-first approach, meaning that you won’t find history support, JavaScript execution in responses, nor any other “bells and whistles”. This is intentional. By embracing the simplicity of hypermedia, the encapsulation of web components (natively or using [Lit](https://lit.dev/)) and the optimised DOM operations of web browsers, you can build highly performant, hypermedia-driven web apps, without requiring a full-blown JavaScript framework.
 
-Read the [getting started guide](https://data-star.dev/guide/getting_started) for Datastar.
+Read [Datastar’s getting started guide](https://data-star.dev/guide/getting_started).
 
 > [!WARNING]  
 > **This plugin is experimental and its API is likely to change – do _not_ use in production!**  
@@ -77,6 +77,7 @@ Actions can be run by passing their routes in as arguments, followed by any temp
 Spark will automatically add a CSRF token to all non-`GET` requests.
 
 The following HTTP request methods are supported:
+
 - `spark.get()`
 - `spark.post()`
 - `spark.put()`
@@ -86,6 +87,10 @@ The following HTTP request methods are supported:
 Action response data is piped into any templates that follow. So the following example shows how you might set up a user edit form on a page that displays the user’s username in the header.
 
 ```twig
+<div id="username">
+    Logged in as {{ currentUser.username }}
+</div>
+
 <div id="user-form">
     <input type="hidden" name="userId" value="{{ currentUser.id }}">
     <input type="text" name="username" value="{{ currentUser.username }}">
@@ -93,6 +98,7 @@ Action response data is piped into any templates that follow. So the following e
         Submit
     </button>
 </div>
+
 <div id="alert"></div>
 ```
 
@@ -101,11 +107,24 @@ Action response data is piped into any templates that follow. So the following e
 
 <div id="alert">
     {% if errors is defined and errors is not empty %}
+        Couldn’t save user!
         {% for error in errors %}
             {{ error }}
         {% endfor %}
     {% else %}
-        User successfully saved.
+        User successfully saved!
     {% endif %}
 </div>
 ```
+
+```twig
+{# _spark/username.twig #}
+
+<div id="username">
+    Logged in as {{ username }}
+</div>
+```
+
+---
+
+Created by [PutYourLightsOn](https://putyourlightson.com/).

@@ -1,6 +1,3 @@
-# Creates a new GitHub Release whenever the Craft Plugin Store
-# is notified of a new version tag.
-
 name: Create Release
 run-name: Create release for ${{ github.event.client_payload.version }}
 
