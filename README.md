@@ -30,7 +30,7 @@ composer require putyourlightson/craft-spark
 
 ## Usage
 
-Spark uses [Datastar](https://data-star.dev) as the mechanism for interacting with the back-end, and provides a simple API for which to do so.
+Spark uses [Datastar](https://data-star.dev) for interacting with the back-end, and provides a simple API for which to do so.
 
 ```twig
 <div id="primary"></div>
