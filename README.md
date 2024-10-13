@@ -30,99 +30,82 @@ composer require putyourlightson/craft-spark
 
 ## Usage
 
-Creates a data store with initial data and a button that makes a `GET` request to the server and swaps the rendered template into the DOM on click.
+Spark uses [Datastar](https://data-star.dev) as the mechanism for interacting with the back-end, and provides a simple API for which to do so.
 
 ```twig
-<div data-store="{ version: 'Alpha' }">
-    <div id="main">
-        Initial version:
-        <input type="text" data-model="version">
-    </div>
+<div id="primary"></div>
 
-    <button data-on-click="{{ spark.get('_spark/main.twig') }}">
-        Refresh
+<button data-on-click="{{ spark.get('_spark/primary.twig') }}">
+    Submit
+</button>
+```
+
+```twig
+{# _spark/primary.twig #}
+
+<div id="primary">
+    This content will be swapped into the DOM based on its ID.
+</div>
+```
+
+Templates fetched using `spark.get()` should contain a single top-level element with an ID, which determines which element in the DOM will be swapped (using [Idiomorph](https://github.com/bigskysoftware/idiomorph)).
+
+Multiple parts of the DOM can be swapped by passing multiple template paths into `spark.get()`.
+
+```twig
+<button data-on-click="{{ spark.get('_spark/primary.twig', '_spark/secondary.twig') }}">
+    Submit
+</button>
+```
+
+Datastar’s “store” is automatically passed into each template. Variables can also be passed into each by providing an array instead of a string, with the syntax `[templatePath, variables]`.
+
+```twig
+<button data-on-click="{{ spark.get('[_spark/primary.twig', variables], '_spark/secondary.twig') }}">
+    Submit
+</button>
+```
+
+Actions can be run by passing their routes in as arguments, followed by any templates to be rendered. Most actions require a `POST` request, which can be made as follows.
+
+```twig
+<button data-on-click="{{ spark.post('users/save-user', '_spark/primary.twig') }}">
+    Submit
+</button>
+```
+
+Spark will automatically add a CSRF token to all non-`GET` requests.
+
+The following HTTP request methods are supported:
+- `spark.get()`
+- `spark.post()`
+- `spark.put()`
+- `spark.patch()`
+- `spark.delete()`
+
+Action response data is piped into any templates that follow. So the following example shows how you might set up a user edit form on a page that displays the user’s username in the header.
+
+```twig
+<div id="user-form">
+    <input type="hidden" name="userId" value="{{ currentUser.id }}">
+    <input type="text" name="username" value="{{ currentUser.username }}">
+    <button data-on-click="{{ spark.post('users/save-user', '_spark/save-user.twig', '_spark/username.twig') }}">
+        Submit
     </button>
 </div>
+<div id="alert"></div>
 ```
 
-Contains an element that will be swapped into the DOM based on its ID.
-
 ```twig
-{# _spark/main.twig #}
+{# _spark/save-user.twig #}
 
-<div id="main">
-    Next version:
-    <input type="text" data-model="version" value="Beta">
+<div id="alert">
+    {% if errors is defined and errors is not empty %}
+        {% for error in errors %}
+            {{ error }}
+        {% endfor %}
+    {% else %}
+        User successfully saved.
+    {% endif %}
 </div>
 ```
-
-### Template Variables
-
-#### `spark.get()`
-
-Renders one or more template paths via a `GET` request, and swaps elements in the DOM that have matching IDs in the rendered templates.
-
-```twig
-{{ spark.get(
-    '_spark/primary.twig', 
-    '_spark/secondary.twig'
-) }}
-```
-
-One or more variables can be passed into each template by providing an array instead of a string, with the syntax `[templatePath, variables]`.
-
-```twig
-{{ spark.get(
-    ['_spark/primary.twig', { foo: 'bar' }], 
-    '_spark/secondary.twig'
-) }}
-
-```
-
-#### `spark.post()`
-
-Runs one or more actions and renders one or more template paths via a `POST` request, and swaps elements in the DOM that have matching IDs in the rendered templates. Action response data is piped into the templates that follow.
-
-```twig
-{{ spark.post(
-    'controller/action', 
-    '_spark/main.twig'
-) }}
-```
-
-One or more params can be passed into each action by providing an array instead of a string, with the syntax `[actionRoute, params]`.
-
-```twig
-{{ spark.post(
-    ['controller/action', { foo: 'bar' }], 
-    '_spark/main.twig'
-) }}
-```
-
-Here is an example of using action response data in the template.
-
-```twig
-{# _spark/main.twig #}
-
-{% if errors is defined %}
-    <div class="alert">
-        {{ errors|join(', ') }}
-    </div>
-{% endif %}
-```
-
-#### `spark.put()`
-
-Same as `spark.post()` but uses the PUT method.
-
-#### `spark.patch()`
-
-Same as `spark.post()` but uses the PATCH method.
-
-#### `spark.delete()`
-
-Same as `spark.post()` but uses the DELETE method.
-
----
-
-Created by [PutYourLightsOn](https://putyourlightson.com/).
