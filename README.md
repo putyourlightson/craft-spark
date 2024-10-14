@@ -38,7 +38,7 @@ Spark uses [Datastar](https://data-star.dev) for interacting with the back-end, 
 </button>
 ```
 
-Templates rendered by Spark should contain one or more `fragment` blocks, each containing a single top-level element with an ID, which determines which elements in the DOM will be swapped (using [Idiomorph](https://github.com/bigskysoftware/idiomorph)).
+Templates rendered by Spark should contain one or more `fragment` tags, each containing a single top-level element with an ID, which determines which elements in the DOM will be swapped (using [Idiomorph](https://github.com/bigskysoftware/idiomorph)).
 
 ```twig
 {# _spark/main.twig #}
@@ -62,14 +62,14 @@ Datastar’s “store” params are automatically passed into each template.
 
 Variables can be passed into the template using a second argument. Passed in variables will overwrite any of Datastar’s “store” params with the same names. Variables are tamper-proof yet visible in the source code in plain text, so you should avoid passing in any sensitive data.
 
-> [!NOTE]  
-> Only primitive data types can be used as values: **strings**, **numbers**, **booleans** and **arrays**. Objects, models and elements _cannot_ be used. If you want to pass an element (or set of elements) into the template then you should pass in an ID (or array of IDs) instead and then fetch the element from within the component.
-
 ```twig
 <button data-on-click="{{ spark.get('_spark/main.twig', { userId: 1 }) }}">
     Submit
 </button>
 ```
+
+> [!NOTE]  
+> Only primitive data types can be used as values: **strings**, **numbers**, **booleans** and **arrays**. Objects, models and elements _cannot_ be used. If you want to pass an element (or set of elements) into the template then you should pass in an ID (or array of IDs) instead and then fetch the element from within the component.
 
 Actions can be run within templates rendered by Spark. The `spark.runAction()` function accepts a controller action route and a set of params (optional), and returns the action’s response data.
 
@@ -115,7 +115,7 @@ Multiple fragments can be sent back in a single response. Each fragment should b
 {% endfragment %}
 ```
 
-Most actions require a `POST` request. Spark will automatically add a CSRF token to all non-`GET` requests.
+Most actions require a `POST` request. Spark will automatically add a CSRF token to all non-`GET` requests, so you don’t have to think about them.
 
 ```twig
 <button data-on-click="{{ spark.post('_spark/main.twig', { userId: 1 }) }}">
