@@ -76,7 +76,7 @@ Actions can be run within templates rendered by Spark. The `spark.runAction()` f
 ```twig
 {# _spark/main.twig #}
 
-{% do data = spark.runAction('users/save-user', { userId: userId }) %}
+{% set data = spark.runAction('users/save-user', { userId: userId }) %}
 
 {% fragment %}
     <div id="main">
@@ -94,7 +94,7 @@ Datastar’s store params can be modified within templates rendered by Spark. Th
 ```twig
 {# _spark/main.twig #}
 
-{% do data = spark.setStore({ username: 'bobby' }) %}
+{% do spark.setStore({ username: 'bobby' }) %}
 ```
 
 Multiple fragments can be sent back in a single response. Each fragment should be wrapped in a `fragment` tag and will replace the corresponding element in the DOM.
