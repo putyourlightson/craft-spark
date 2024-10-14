@@ -33,48 +33,95 @@ composer require putyourlightson/craft-spark
 Spark uses [Datastar](https://data-star.dev) for interacting with the back-end, and provides a simple API for which to do so.
 
 ```twig
-<div id="primary"></div>
-
-<button data-on-click="{{ spark.get('_spark/primary.twig') }}">
+<button data-on-click="{{ spark.get('_spark/main.twig') }}">
     Submit
 </button>
 ```
 
-```twig
-{# _spark/primary.twig #}
+Templates rendered by Spark should contain one or more `fragment` blocks, each containing a single top-level element with an ID, which determines which elements in the DOM will be swapped (using [Idiomorph](https://github.com/bigskysoftware/idiomorph)).
 
-<div id="primary">
-    This content will be swapped into the DOM based on its ID.
+```twig
+{# _spark/main.twig #}
+
+{% fragment %}
+    <div id="main">
+        This content will be swapped into the DOM based on its ID.
+    </div>
+{% endfragment %}
+```
+
+Datastar’s “store” params are automatically passed into each template.
+
+```twig
+<div data-store="{ username: 'bob' }">
+    <button data-on-click="{{ spark.get('_spark/main.twig') }}">
+        Submit
+    </button>
 </div>
 ```
 
-Templates fetched using `spark.get()` should contain a single top-level element with an ID, which determines which element in the DOM will be swapped (using [Idiomorph](https://github.com/bigskysoftware/idiomorph)).
+Variables can be passed into the template using a second argument. Passed in variables will overwrite any of Datastar’s “store” params with the same names. Variables are tamper-proof yet visible in the source code in plain text, so you should avoid passing in any sensitive data.
 
-Multiple parts of the DOM can be swapped by passing multiple template paths into `spark.get()`.
+> [!NOTE]  
+> Only primitive data types can be used as values: **strings**, **numbers**, **booleans** and **arrays**. Objects, models and elements _cannot_ be used. If you want to pass an element (or set of elements) into the template then you should pass in an ID (or array of IDs) instead and then fetch the element from within the component.
 
 ```twig
-<button data-on-click="{{ spark.get('_spark/primary.twig', '_spark/secondary.twig') }}">
+<button data-on-click="{{ spark.get('_spark/main.twig', { userId: 1 }) }}">
     Submit
 </button>
 ```
 
-Datastar’s “store” is automatically passed into each template. Variables can also be passed into each by providing an array instead of a string, with the syntax `[templatePath, variables]`.
+Actions can be run within templates rendered by Spark. The `spark.runAction()` function accepts a controller action route and a set of params (optional), and returns the action’s response data.
 
 ```twig
-<button data-on-click="{{ spark.get('[_spark/primary.twig', variables], '_spark/secondary.twig') }}">
+{# _spark/main.twig #}
+
+{% do data = spark.runAction('users/save-user', { userId: userId }) %}
+
+{% fragment %}
+    <div id="main">
+        {% if data.errors is defined %}
+            Errors: {{ data.errors|join() }}
+        {% else %}
+            User successfully saved!
+        {% endif %}
+    </div>
+{% endfragment %}
+```
+
+Datastar’s store params can be modified within templates rendered by Spark. The `spark.setStore()` function accepts a set of params.
+
+```twig
+{# _spark/main.twig #}
+
+{% do data = spark.setStore({ username: 'bobby' }) %}
+```
+
+Multiple fragments can be sent back in a single response. Each fragment should be wrapped in a `fragment` tag and will replace the corresponding element in the DOM.
+
+```twig
+{# _spark/main.twig #}
+
+{% fragment %}
+    <div id="main">
+        User successfully saved!
+    </div>
+{% endfragment %}
+
+{% fragment %}
+    <div id="username">
+        Username: {{ username }}
+    </div>
+{% endfragment %}
+```
+
+Most actions require a `POST` request. Spark will automatically add a CSRF token to all non-`GET` requests.
+
+```twig
+<button data-on-click="{{ spark.post('_spark/main.twig', { userId: 1 }) }}">
     Submit
 </button>
 ```
-
-Actions can be run by passing their routes in as arguments, followed by any templates to be rendered. Most actions require a `POST` request, which can be made as follows.
-
-```twig
-<button data-on-click="{{ spark.post('users/save-user', '_spark/primary.twig') }}">
-    Submit
-</button>
-```
-
-Spark will automatically add a CSRF token to all non-`GET` requests.
 
 The following HTTP request methods are supported:
 
@@ -83,47 +130,6 @@ The following HTTP request methods are supported:
 - `spark.put()`
 - `spark.patch()`
 - `spark.delete()`
-
-Action response data is piped into any templates that follow. So the following example shows how you might set up a user edit form on a page that displays the user’s username in the header.
-
-```twig
-<div id="username">
-    Logged in as {{ currentUser.username }}
-</div>
-
-<div id="user-form">
-    <input type="hidden" name="userId" value="{{ currentUser.id }}">
-    <input type="text" name="username" value="{{ currentUser.username }}">
-    <button data-on-click="{{ spark.post('users/save-user', '_spark/save-user.twig', '_spark/username.twig') }}">
-        Submit
-    </button>
-</div>
-
-<div id="alert"></div>
-```
-
-```twig
-{# _spark/save-user.twig #}
-
-<div id="alert">
-    {% if errors is defined and errors is not empty %}
-        Couldn’t save user!
-        {% for error in errors %}
-            {{ error }}
-        {% endfor %}
-    {% else %}
-        User successfully saved!
-    {% endif %}
-</div>
-```
-
-```twig
-{# _spark/username.twig #}
-
-<div id="username">
-    Logged in as {{ username }}
-</div>
-```
 
 ---
 

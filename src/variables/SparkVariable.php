@@ -9,86 +9,101 @@ use Craft;
 use craft\helpers\UrlHelper;
 use putyourlightson\spark\models\ConfigModel;
 use putyourlightson\spark\Spark;
+use yii\web\BadRequestHttpException;
 
 class SparkVariable
 {
     /**
-     * Returns a stream URL for a GET request.
+     * Returns a URL for a GET request.
      */
-    public function get(array|string ...$values): string
+    public function get(string $template, array $variables = []): string
     {
-        return $this->getMethodUrl('get', $values);
+        return $this->getMethodUrl('get', $template, $variables);
     }
 
     /**
-     * Returns a stream URL for a POST request.
+     * Returns a URL for a POST request.
      */
-    public function post(array|string ...$values): string
+    public function post(string $template, array $variables = []): string
     {
-        return $this->getMethodUrl('post', $values);
+        return $this->getMethodUrl('post', $template, $variables);
     }
 
     /**
-     * Returns a stream URL for a PUT request.
+     * Returns a URL for a PUT request.
      */
-    public function put(array|string ...$values): string
+    public function put(string $template, array $variables = []): string
     {
-        return $this->getMethodUrl('put', $values);
+        return $this->getMethodUrl('put', $template, $variables);
     }
 
     /**
-     * Returns a stream URL for a PATCH request.
+     * Returns a URL for a PATCH request.
      */
-    public function patch(array|string ...$values): string
+    public function patch(string $template, array $variables = []): string
     {
-        return $this->getMethodUrl('patch', $values);
+        return $this->getMethodUrl('patch', $template, $variables);
     }
 
     /**
-     * Returns a stream URL for a DELETE request.
+     * Returns a URL for a DELETE request.
      */
-    public function delete(array|string ...$values): string
+    public function delete(string $template, array $variables = []): string
     {
-        return $this->getMethodUrl('delete', $values);
+        return $this->getMethodUrl('delete', $template, $variables);
     }
 
     /**
-     * Sets options for the current event.
-     */
-    public function options(array $options): void
-    {
-        Spark::$plugin->stream->setOptions($options);
-    }
-
-    /**
-     * Adds a signal event to the stream.
-     */
-    public function signal(array $values): void
-    {
-        Spark::$plugin->stream->addSignal($values);
-    }
-
-    /**
-     * Returns whether the request is a stream request.
-     * This method is intentionally named `getIsRequest` so that Twig autocompletion suggests `isRequest`.
+     * Returns whether the request is a Spark request.
+     * This method is intentionally named `getIsRequest` so that Twig autocompletes it as `spark.isRequest`.
      */
     public function getIsRequest(): bool
     {
-        return Craft::$app->getRequest()->getHeaders()->get('datastar-request') === 'true';
+        return Spark::$plugin->response->getIsRequest();
     }
 
-    private function getMethodUrl(string $method, array $values): string
+    /**
+     * Runs a controller action and returns the response data.
+     */
+    public function runAction(string $route, array $params): ?array
+    {
+        return Spark::$plugin->response->runAction($route, $params);
+    }
+
+    /**
+     * Sends a fragment in the response.
+     */
+    public function sendFragment(string $content, array $options): void
+    {
+        Spark::$plugin->response->sendFragment($content, $options);
+    }
+
+    /**
+     * Sets the store values in the response.
+     */
+    public function setStore(array $values): void
+    {
+        Spark::$plugin->response->setStore($values);
+    }
+
+    private function getMethodUrl(string $method, string $template, array $variables = []): string
     {
         $config = new ConfigModel([
             'siteId' => Craft::$app->getSites()->getCurrentSite()->id,
-            'values' => $values,
+            'method' => $method,
+            'template' => $template,
+            'variables' => $variables,
         ]);
+
+        if (!$config->validate()) {
+            throw new BadRequestHttpException(implode(' ', $config->getFirstErrors()));
+        }
 
         if ($method !== 'get') {
             $config->csrfToken = Craft::$app->getRequest()->csrfToken;
         }
 
-        $url = UrlHelper::actionUrl('spark/stream', [
+        $url = UrlHelper::actionUrl('spark/response', [
             'config' => $config->getHashed(),
         ]);
 

@@ -7,11 +7,11 @@ namespace putyourlightson\spark;
 
 use Craft;
 use craft\base\Plugin;
-use putyourlightson\spark\services\StreamService;
+use putyourlightson\spark\services\ResponseService;
 use putyourlightson\spark\twigextensions\SparkTwigExtension;
 
 /**
- * @property-read StreamService $stream
+ * @property-read ResponseService $response
  */
 class Spark extends Plugin
 {
@@ -32,7 +32,7 @@ class Spark extends Plugin
     {
         return [
             'components' => [
-                'stream' => ['class' => StreamService::class],
+                'response' => ['class' => ResponseService::class],
             ],
         ];
     }
