@@ -8,7 +8,6 @@ namespace putyourlightson\spark\controllers;
 use craft\helpers\Json;
 use craft\web\Controller;
 use putyourlightson\spark\Spark;
-use yii\web\Response;
 
 class ResponseController extends Controller
 {
@@ -22,21 +21,14 @@ class ResponseController extends Controller
      */
     public $enableCsrfValidation = false;
 
-    public function actionIndex(): Response
+    public function actionIndex(): void
     {
         $config = $this->request->getParam('config');
         $params = $this->getParams();
 
-        $this->response->getHeaders()
-            ->set('Cache-Control', 'no-cache')
-            ->set('Content-Type', 'text/event-stream');
+        Spark::$plugin->response->process($config, $params);
 
-        $this->response->format = Response::FORMAT_RAW;
-        $this->response->stream = function() use ($config, $params) {
-            return Spark::$plugin->response->stream($config, $params);
-        };
-
-        return $this->response;
+        exit();
     }
 
     private function getParams()

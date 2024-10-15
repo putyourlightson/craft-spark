@@ -9,9 +9,9 @@ use Craft;
 use craft\base\Component;
 use craft\helpers\Json;
 use craft\web\View;
-use Generator;
+use putyourlightson\datastar\DatastarEvent;
+use putyourlightson\datastar\DatastarResponse;
 use putyourlightson\spark\models\ConfigModel;
-use putyourlightson\spark\models\EventModel;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
 
@@ -23,9 +23,19 @@ class ResponseService extends Component
     private int $id = 0;
 
     /**
-     * @var array<EventModel> The events to stream.
+     * @var ?DatastarResponse The Datastar response.
      */
-    private array $events = [];
+    private ?DatastarResponse $response = null;
+
+    /**
+     * @inerhitdoc
+     */
+    public function init(): void
+    {
+        parent::init();
+
+        $this->response = new DatastarResponse();
+    }
 
     /**
      * Returns whether the request is a Spark request.
@@ -33,6 +43,18 @@ class ResponseService extends Component
     public function getIsRequest(): bool
     {
         return Craft::$app->getRequest()->getHeaders()->get('datastar-request') === 'true';
+    }
+
+    /**
+     * Processes the response.
+     */
+    public function process(string $config, array $params): void
+    {
+        $config = $this->getValidatedConfig($config);
+        Craft::$app->getSites()->setCurrentSite($config->siteId);
+
+        $variables = array_merge($params, $config->variables);
+        $this->renderTemplate($config->template, $variables);
     }
 
     /**
@@ -55,7 +77,7 @@ class ResponseService extends Component
      */
     public function sendFragment(string $content, array $options): void
     {
-        $this->addEvent('fragment', $content, $options);
+        $this->sendEvent('fragment', $content, $options);
     }
 
     /**
@@ -63,26 +85,10 @@ class ResponseService extends Component
      */
     public function setStore(array $values): void
     {
-        $this->addEvent('signal', Json::encode($values));
+        $this->sendEvent('signal', Json::encode($values));
     }
 
-    /**
-     * Streams events.
-     */
-    public function stream(string $config, array $params): Generator
-    {
-        $config = $this->getValidatedConfig($config);
-        Craft::$app->getSites()->setCurrentSite($config->siteId);
-
-        $variables = array_merge($params, $config->variables);
-        $this->renderTemplate($config->template, $variables);
-
-        foreach ($this->events as $event) {
-            yield $event->getOutput();
-        }
-    }
-
-    private function addEvent(string $type, string $content, array $options = []): void
+    private function sendEvent(string $type, string $content, array $options = []): void
     {
         if (!$this->getIsRequest()) {
             return;
@@ -90,15 +96,17 @@ class ResponseService extends Component
 
         $this->id++;
 
-        $event = new EventModel([
+        $event = new DatastarEvent([
             'id' => $this->id,
             'type' => $type,
             'content' => $content,
         ]);
 
-        $event->setAttributes($options);
+        foreach ($options as $key => $value) {
+            $event->{$key} = $value;
+        }
 
-        $this->events[] = $event;
+        $this->response->sendEvent($event);
     }
 
     private function getValidatedConfig(string $config): ConfigModel
