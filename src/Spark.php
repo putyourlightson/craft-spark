@@ -15,6 +15,8 @@ use putyourlightson\spark\twigextensions\SparkTwigExtension;
  */
 class Spark extends Plugin
 {
+    public const DATASTAR_VERSION = '0.18';
+
     /**
      * @inerhitdoc
      */
@@ -24,11 +26,6 @@ class Spark extends Plugin
      * @var Spark
      */
     public static Spark $plugin;
-
-    /**
-     * @var string
-     */
-    public string $datastarVersion = '0.18';
 
     /**
      * @inerhitdoc
@@ -59,7 +56,7 @@ class Spark extends Plugin
     private function registerJsFile(): void
     {
         if (Craft::$app->getRequest()->getIsSiteRequest()) {
-            $url = 'https://cdn.jsdelivr.net/npm/@sudodevnull/datastar@' . $this->datastarVersion;
+            $url = 'https://cdn.jsdelivr.net/npm/@sudodevnull/datastar@' . self::DATASTAR_VERSION;
             Craft::$app->getView()->registerJsFile($url, [
                 'type' => 'module',
                 'defer' => true,
