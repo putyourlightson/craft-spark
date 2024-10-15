@@ -38,14 +38,6 @@ class ResponseService extends Component
     }
 
     /**
-     * Returns whether the request is a Spark request.
-     */
-    public function getIsRequest(): bool
-    {
-        return Craft::$app->getRequest()->getHeaders()->get('datastar-request') === 'true';
-    }
-
-    /**
      * Processes the response.
      */
     public function process(string $config, array $params): void
@@ -62,10 +54,6 @@ class ResponseService extends Component
      */
     public function runAction(string $route, array $params): ?array
     {
-        if (!$this->getIsRequest()) {
-            return null;
-        }
-
         Craft::$app->getRequest()->getHeaders()->set('Accept', 'application/json');
         $response = Craft::$app->runAction($route, $params);
 
@@ -90,10 +78,6 @@ class ResponseService extends Component
 
     private function sendEvent(string $type, string $content, array $options = []): void
     {
-        if (!$this->getIsRequest()) {
-            return;
-        }
-
         $this->id++;
 
         $event = new DatastarEvent([

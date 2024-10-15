@@ -59,7 +59,7 @@ class SparkVariable
      */
     public function getIsRequest(): bool
     {
-        return Spark::$plugin->response->getIsRequest();
+        return Craft::$app->getRequest()->getHeaders()->get('datastar-request') === 'true';
     }
 
     /**
