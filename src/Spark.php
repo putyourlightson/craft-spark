@@ -26,6 +26,11 @@ class Spark extends Plugin
     public static Spark $plugin;
 
     /**
+     * @var string
+     */
+    public string $datastarVersion = '0.18';
+
+    /**
      * @inerhitdoc
      */
     public static function config(): array
@@ -54,7 +59,8 @@ class Spark extends Plugin
     private function registerJsFile(): void
     {
         if (Craft::$app->getRequest()->getIsSiteRequest()) {
-            Craft::$app->getView()->registerJsFile('https://cdn.jsdelivr.net/npm/@sudodevnull/datastar', [
+            $url = 'https://cdn.jsdelivr.net/npm/@sudodevnull/datastar@' . $this->datastarVersion;
+            Craft::$app->getView()->registerJsFile($url, [
                 'type' => 'module',
                 'defer' => true,
             ]);
