@@ -27,8 +27,6 @@ class ResponseController extends Controller
         $params = $this->getParams();
 
         Spark::$plugin->response->process($config, $params);
-
-        exit();
     }
 
     private function getParams()

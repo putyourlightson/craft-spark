@@ -44,9 +44,15 @@ class ResponseService extends Component
     {
         $config = $this->getValidatedConfig($config);
         Craft::$app->getSites()->setCurrentSite($config->siteId);
-
         $variables = array_merge($params, $config->variables);
+
         $this->renderTemplate($config->template, $variables);
+
+        // Trigger Craft response events so that plugins can do their thing.
+        Craft::$app->getResponse()->trigger(Response::EVENT_AFTER_PREPARE);
+        Craft::$app->getResponse()->trigger(Response::EVENT_AFTER_SEND);
+
+        $this->response->end();
     }
 
     /**
