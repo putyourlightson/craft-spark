@@ -6,7 +6,11 @@
 namespace putyourlightson\spark\variables;
 
 use Craft;
+use craft\base\Event;
+use craft\events\AssetBundleEvent;
 use craft\helpers\UrlHelper;
+use craft\web\View;
+use putyourlightson\spark\assets\DatastarAssetBundle;
 use putyourlightson\spark\models\ConfigModel;
 use putyourlightson\spark\Spark;
 use yii\web\BadRequestHttpException;
@@ -71,7 +75,7 @@ class SparkVariable
     }
 
     /**
-     * Sends a fragment in the response.
+     * Sends a fragment event.
      */
     public function sendFragment(string $content, array $options): void
     {
@@ -79,11 +83,60 @@ class SparkVariable
     }
 
     /**
-     * Sets the store values in the response.
+     * Sends a signal event.
      */
-    public function setStore(array $values): void
+    public function sendSignal(array $values): void
     {
-        Spark::$plugin->response->setStore($values);
+        Spark::$plugin->response->sendSignal($values);
+    }
+
+    /**
+     * Sends a delete event.
+     */
+    public function sendDelete(string $selector): void
+    {
+        Spark::$plugin->response->sendDelete($selector);
+    }
+
+    /**
+     * Sends a redirect event.
+     */
+    public function sendRedirect(string $content): void
+    {
+        Spark::$plugin->response->sendRedirect($content);
+    }
+
+    /**
+     * Sends a console event.
+     */
+    public function sendConsole(string $content): void
+    {
+        Spark::$plugin->response->sendConsole($content);
+    }
+
+    /**
+     * Register the Datastar script.
+     */
+    public function registerScript(): void
+    {
+        $options = [
+            'type' => 'module',
+            'defer' => true,
+        ];
+
+        Event::on(View::class, View::EVENT_AFTER_REGISTER_ASSET_BUNDLE,
+            function(AssetBundleEvent $event) use ($options) {
+                if ($event->bundle instanceof DatastarAssetBundle) {
+                    $event->bundle->jsOptions = $options;
+                }
+            }
+        );
+
+        $bundle = Craft::$app->getView()->registerAssetBundle(DatastarAssetBundle::class);
+
+        // Register the JS file explicitly so that it will be output when using template caching.
+        $url = Craft::$app->getView()->getAssetManager()->getAssetUrl($bundle, $bundle->js[0]);
+        Craft::$app->getView()->registerJsFile($url, $options);
     }
 
     private function getMethodUrl(string $method, string $template, array $variables = []): string

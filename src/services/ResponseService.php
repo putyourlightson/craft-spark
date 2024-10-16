@@ -11,6 +11,12 @@ use craft\helpers\Json;
 use craft\web\View;
 use putyourlightson\datastar\DatastarEvent;
 use putyourlightson\datastar\DatastarResponse;
+use putyourlightson\datastar\events\ConsoleEvent;
+use putyourlightson\datastar\events\DeleteEvent;
+use putyourlightson\datastar\events\EventInterface;
+use putyourlightson\datastar\events\FragmentEvent;
+use putyourlightson\datastar\events\RedirectEvent;
+use putyourlightson\datastar\events\SignalEvent;
 use putyourlightson\spark\models\ConfigModel;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
@@ -67,30 +73,53 @@ class ResponseService extends Component
     }
 
     /**
-     * Adds an event to send a fragment.
+     * Sends a fragment event.
      */
     public function sendFragment(string $content, array $options): void
     {
-        $this->sendEvent('fragment', $content, $options);
+        $this->sendEvent(FragmentEvent::class, $content, $options);
     }
 
     /**
-     * Adds an event to set the store values.
+     * Sends a signal event.
      */
-    public function setStore(array $values): void
+    public function sendSignal(array $values): void
     {
-        $this->sendEvent('signal', Json::encode($values));
+        $this->sendEvent(SignalEvent::class, '', ['store' => Json::encode($values)]);
     }
 
-    private function sendEvent(string $type, string $content, array $options = []): void
+    /**
+     * Sends a delete event.
+     */
+    public function sendDelete(string $selector): void
+    {
+        $this->sendEvent(DeleteEvent::class, '', ['selector' => $selector]);
+    }
+
+    /**
+     * Sends a redirect event.
+     */
+    public function sendRedirect(string $content): void
+    {
+        $this->sendEvent(RedirectEvent::class, $content);
+    }
+
+    /**
+     * Sends a console event.
+     */
+    public function sendConsole(string $content): void
+    {
+        $this->sendEvent(ConsoleEvent::class, $content);
+    }
+
+    private function sendEvent(string $class, string $content, array $options = []): void
     {
         $this->id++;
 
-        $event = new DatastarEvent([
-            'id' => $this->id,
-            'type' => $type,
-            'content' => $content,
-        ]);
+        /** @var EventInterface $event */
+        $event = new $class();
+        $event->id = $this->id;
+        $event->content = $content;
 
         foreach ($options as $key => $value) {
             $event->{$key} = $value;

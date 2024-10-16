@@ -15,8 +15,6 @@ use putyourlightson\spark\twigextensions\SparkTwigExtension;
  */
 class Spark extends Plugin
 {
-    public const DATASTAR_VERSION = '0.18';
-
     /**
      * @inerhitdoc
      */
@@ -45,22 +43,10 @@ class Spark extends Plugin
         self::$plugin = $this;
 
         $this->registerTwigExtension();
-        $this->registerJsFile();
     }
 
     private function registerTwigExtension(): void
     {
         Craft::$app->view->registerTwigExtension(new SparkTwigExtension());
-    }
-
-    private function registerJsFile(): void
-    {
-        if (Craft::$app->getRequest()->getIsSiteRequest()) {
-            $url = 'https://cdn.jsdelivr.net/npm/@sudodevnull/datastar@' . self::DATASTAR_VERSION;
-            Craft::$app->getView()->registerJsFile($url, [
-                'type' => 'module',
-                'defer' => true,
-            ]);
-        }
     }
 }
