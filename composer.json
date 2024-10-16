@@ -23,7 +23,7 @@
     "name": "Spark",
     "developer": "PutYourLightsOn",
     "developerUrl": "https://putyourlightson.com/",
-    "documentationUrl": "https://github.com/putyourlightson/craft-spark",
+    "documentationUrl": "https://putyourlightson.com/plugins/spark",
     "changelogUrl": "https://raw.githubusercontent.com/putyourlightson/craft-spark/develop/CHANGELOG.md",
     "class": "putyourlightson\\spark\\Spark"
   },
