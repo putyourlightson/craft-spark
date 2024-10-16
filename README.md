@@ -1,4 +1,7 @@
-<p align="center"><img width="150" src="https://raw.githubusercontent.com/putyourlightson/craft-spark/refs/heads/develop/src/icon.svg?token=GHSAT0AAAAAABUEIQTWQHGWPSK4IG7LEOUWZYMBAMQ"></p>
+[![Stable Version](https://img.shields.io/packagist/v/putyourlightson/craft-spark?label=stable)]((https://packagist.org/packages/putyourlightson/craft-spark))
+[![Total Downloads](https://img.shields.io/packagist/dt/putyourlightson/craft-spark)](https://packagist.org/packages/putyourlightson/craft-spark)
+
+<p align="center"><img width="150" src="https://putyourlightson.com/assets/logos/spark.svg"></p>
 
 # Spark Plugin for Craft CMS
 
