@@ -28,13 +28,13 @@ class ResponseService extends Component
     private array $events = [];
 
     /**
-     * Processes the response and returns.
+     * Processes the response and returns the event output.
      */
-    public function process(string $config, array $params): string
+    public function process(string $config, array $store): string
     {
         $config = $this->getValidatedConfig($config);
         Craft::$app->getSites()->setCurrentSite($config->siteId);
-        $variables = array_merge($params, $config->variables);
+        $variables = array_merge(['store' => $store], $config->variables);
 
         $content = $this->renderTemplate($config->template, $variables);
         if (!empty($content)) {
@@ -42,7 +42,6 @@ class ResponseService extends Component
         }
 
         $output = [];
-
         foreach ($this->events as $event) {
             $output[] = $event->getOutput();
         }
