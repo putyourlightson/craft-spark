@@ -6,11 +6,7 @@
 namespace putyourlightson\spark\variables;
 
 use Craft;
-use craft\base\Event;
-use craft\events\AssetBundleEvent;
 use craft\helpers\UrlHelper;
-use craft\web\View;
-use putyourlightson\spark\assets\DatastarAssetBundle;
 use putyourlightson\spark\models\ConfigModel;
 use putyourlightson\spark\Spark;
 use yii\web\BadRequestHttpException;
@@ -58,85 +54,35 @@ class SparkVariable
     }
 
     /**
-     * Returns whether the request is a Spark request.
-     * This method is intentionally named `getIsRequest` so that Twig autocompletes it as `spark.isRequest`.
+     * Sets store values.
      */
-    public function getIsRequest(): bool
+    public function store(array|string $values = []): void
     {
-        return Craft::$app->getRequest()->getHeaders()->get('datastar-request') === 'true';
+        Spark::$plugin->response->store($values);
     }
 
     /**
-     * Runs a controller action and returns the response data.
+     * Removes elements that match the selector from the DOM.
      */
-    public function runAction(string $route, array $params): ?array
+    public function remove(string $selector): void
     {
-        return Spark::$plugin->response->runAction($route, $params);
+        Spark::$plugin->response->remove($selector);
     }
 
     /**
-     * Sends a fragment event.
+     * Redirects the page to the provided URI.
      */
-    public function sendFragment(string $content, array $options): void
+    public function redirect(string $uri): void
     {
-        Spark::$plugin->response->sendFragment($content, $options);
+        Spark::$plugin->response->redirect($uri);
     }
 
     /**
-     * Sends a signal event.
+     * Returns a console variable for logging messages to the console.
      */
-    public function sendSignal(array $values): void
+    public function console(): ConsoleVariable
     {
-        Spark::$plugin->response->sendSignal($values);
-    }
-
-    /**
-     * Sends a delete event.
-     */
-    public function sendDelete(string $selector): void
-    {
-        Spark::$plugin->response->sendDelete($selector);
-    }
-
-    /**
-     * Sends a redirect event.
-     */
-    public function sendRedirect(string $content): void
-    {
-        Spark::$plugin->response->sendRedirect($content);
-    }
-
-    /**
-     * Sends a console event.
-     */
-    public function sendConsole(string $content): void
-    {
-        Spark::$plugin->response->sendConsole($content);
-    }
-
-    /**
-     * Register the Datastar script.
-     */
-    public function registerScript(): void
-    {
-        $options = [
-            'type' => 'module',
-            'defer' => true,
-        ];
-
-        Event::on(View::class, View::EVENT_AFTER_REGISTER_ASSET_BUNDLE,
-            function(AssetBundleEvent $event) use ($options) {
-                if ($event->bundle instanceof DatastarAssetBundle) {
-                    $event->bundle->jsOptions = $options;
-                }
-            }
-        );
-
-        $bundle = Craft::$app->getView()->registerAssetBundle(DatastarAssetBundle::class);
-
-        // Register the JS file explicitly so that it will be output when using template caching.
-        $url = Craft::$app->getView()->getAssetManager()->getAssetUrl($bundle, $bundle->js[0]);
-        Craft::$app->getView()->registerJsFile($url, $options);
+        return new ConsoleVariable();
     }
 
     private function getMethodUrl(string $method, string $template, array $variables = []): string

@@ -9,8 +9,6 @@ use Craft;
 use craft\base\Component;
 use craft\helpers\Json;
 use craft\web\View;
-use putyourlightson\datastar\DatastarEvent;
-use putyourlightson\datastar\DatastarResponse;
 use putyourlightson\datastar\events\ConsoleEvent;
 use putyourlightson\datastar\events\DeleteEvent;
 use putyourlightson\datastar\events\EventInterface;
@@ -18,114 +16,91 @@ use putyourlightson\datastar\events\FragmentEvent;
 use putyourlightson\datastar\events\RedirectEvent;
 use putyourlightson\datastar\events\SignalEvent;
 use putyourlightson\spark\models\ConfigModel;
+use Throwable;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
 
 class ResponseService extends Component
 {
     /**
-     * @var int The current event ID.
+     * @var EventInterface[] The events to send.
      */
-    private int $id = 0;
+    private array $events = [];
 
     /**
-     * @var ?DatastarResponse The Datastar response.
+     * Processes the response and returns.
      */
-    private ?DatastarResponse $response = null;
-
-    /**
-     * @inerhitdoc
-     */
-    public function init(): void
-    {
-        parent::init();
-
-        $this->response = new DatastarResponse();
-    }
-
-    /**
-     * Processes the response.
-     */
-    public function process(string $config, array $params): void
+    public function process(string $config, array $params): string
     {
         $config = $this->getValidatedConfig($config);
         Craft::$app->getSites()->setCurrentSite($config->siteId);
         $variables = array_merge($params, $config->variables);
 
-        $this->renderTemplate($config->template, $variables);
-
-        // Trigger Craft response events so that plugins can do their thing.
-        Craft::$app->getResponse()->trigger(Response::EVENT_AFTER_PREPARE);
-        Craft::$app->getResponse()->trigger(Response::EVENT_AFTER_SEND);
-
-        $this->response->end();
-    }
-
-    /**
-     * Runs a controller action and returns the response data.
-     */
-    public function runAction(string $route, array $params): ?array
-    {
-        Craft::$app->getRequest()->getHeaders()->set('Accept', 'application/json');
-        $response = Craft::$app->runAction($route, $params);
-
-        return is_array($response->data) ? $response->data : [];
-    }
-
-    /**
-     * Sends a fragment event.
-     */
-    public function sendFragment(string $content, array $options): void
-    {
-        $this->sendEvent(FragmentEvent::class, $content, $options);
-    }
-
-    /**
-     * Sends a signal event.
-     */
-    public function sendSignal(array $values): void
-    {
-        $this->sendEvent(SignalEvent::class, '', ['store' => Json::encode($values)]);
-    }
-
-    /**
-     * Sends a delete event.
-     */
-    public function sendDelete(string $selector): void
-    {
-        $this->sendEvent(DeleteEvent::class, '', ['selector' => $selector]);
-    }
-
-    /**
-     * Sends a redirect event.
-     */
-    public function sendRedirect(string $content): void
-    {
-        $this->sendEvent(RedirectEvent::class, $content);
-    }
-
-    /**
-     * Sends a console event.
-     */
-    public function sendConsole(string $content): void
-    {
-        $this->sendEvent(ConsoleEvent::class, $content);
-    }
-
-    private function sendEvent(string $class, string $content, array $options = []): void
-    {
-        $this->id++;
-
-        /** @var EventInterface $event */
-        $event = new $class();
-        $event->id = $this->id;
-        $event->content = $content;
-
-        foreach ($options as $key => $value) {
-            $event->{$key} = $value;
+        $content = $this->renderTemplate($config->template, $variables);
+        if (!empty($content)) {
+            $this->addEvent(FragmentEvent::class, $content);
         }
 
-        $this->response->sendEvent($event);
+        $output = [];
+
+        foreach ($this->events as $event) {
+            $output[] = $event->getOutput();
+        }
+
+        return implode('', $output);
+    }
+
+    /**
+     * Sets store values.
+     */
+    public function store(array|string $values): void
+    {
+        if (is_array($values)) {
+            $values = Json::encode($values);
+        }
+
+        $this->addEvent(SignalEvent::class, '', ['store' => $values]);
+    }
+
+    /**
+     * Removes elements that match the selector from the DOM.
+     */
+    public function remove(string $selector): void
+    {
+        $this->addEvent(DeleteEvent::class, '', ['selector' => $selector]);
+    }
+
+    /**
+     * Redirects the page to the provided URI.
+     */
+    public function redirect(string $uri): void
+    {
+        $this->addEvent(RedirectEvent::class, $uri);
+    }
+
+    /**
+     * Outputs a message to the console.
+     */
+    public function console(string $message, string $mode = 'log'): void
+    {
+        $this->addEvent(ConsoleEvent::class, $message, ['mode' => $mode]);
+    }
+
+    /**
+     * Throws an exception with the appropriate formats for easier debugging.
+     *
+     * @phpstan-return never
+     */
+    public function throwException(Throwable|string $exception): void
+    {
+        Craft::$app->getRequest()->getHeaders()->set('Accept', 'text/html');
+        Craft::$app->getResponse()->format = Response::FORMAT_HTML;
+
+        if ($exception instanceof Throwable) {
+            throw $exception;
+        }
+
+        throw new BadRequestHttpException($exception);
     }
 
     private function getValidatedConfig(string $config): ConfigModel
@@ -147,19 +122,32 @@ class ResponseService extends Component
         return $config;
     }
 
-    private function renderTemplate(string $template, array $variables): void
+    private function renderTemplate(string $template, array $variables): string
     {
         if (!Craft::$app->getView()->doesTemplateExist($template, View::TEMPLATE_MODE_SITE)) {
             $this->throwException('Template `' . $template . '` does not exist.');
         }
 
-        Craft::$app->getView()->renderTemplate($template, $variables, View::TEMPLATE_MODE_SITE);
+        try {
+            return Craft::$app->getView()->renderTemplate($template, $variables, View::TEMPLATE_MODE_SITE);
+        } catch (Throwable $exception) {
+            $this->throwException($exception);
+        }
     }
 
-    private function throwException(string $message): void
+    private function addEvent(string $class, string $content = '', array $options = []): void
     {
-        Craft::$app->getResponse()->format = Response::FORMAT_HTML;
+        /** @var EventInterface $event */
+        $event = new $class();
 
-        throw new BadRequestHttpException($message);
+        if (property_exists($event, 'content')) {
+            $event->content = $content;
+        }
+
+        foreach ($options as $key => $value) {
+            $event->{$key} = $value;
+        }
+
+        $this->events[] = $event;
     }
 }
