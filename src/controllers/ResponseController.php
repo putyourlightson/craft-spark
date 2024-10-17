@@ -25,13 +25,13 @@ class ResponseController extends Controller
     public function actionIndex(): Response
     {
         $config = $this->request->getParam('config');
-        $store = $this->getStore();
+        $store = $this->getStoreParams();
 
         // Set the request to accept JSON so that controller actions return data in their responses.
         $this->request->getHeaders()->set('Accept', 'application/json');
 
-        $this->response->format = Response::FORMAT_RAW;
         $this->response->data = Spark::$plugin->response->process($config, $store);
+        $this->response->format = Response::FORMAT_RAW;
 
         // Set the response headers for the event stream.
         $this->response->getHeaders()->set('Content-Type', 'text/event-stream');
@@ -41,7 +41,7 @@ class ResponseController extends Controller
         return $this->response;
     }
 
-    private function getStore()
+    private function getStoreParams()
     {
         if ($this->request->getIsGet()) {
             $param = $this->request->getParam('datastar', []);

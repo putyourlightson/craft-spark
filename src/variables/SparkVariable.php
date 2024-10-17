@@ -56,7 +56,7 @@ class SparkVariable
     /**
      * Sets store values.
      */
-    public function store(array|string $values = []): void
+    public function store(array $values): void
     {
         Spark::$plugin->response->store($values);
     }

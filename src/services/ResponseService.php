@@ -34,7 +34,9 @@ class ResponseService extends Component
     {
         $config = $this->getValidatedConfig($config);
         Craft::$app->getSites()->setCurrentSite($config->siteId);
-        $variables = array_merge(['store' => $store], $config->variables);
+
+        // Merge in the config variables so they override any store params with the same names.
+        $variables = array_merge($store, $config->variables);
 
         $content = $this->renderTemplate($config->template, $variables);
         if (!empty($content)) {
@@ -52,13 +54,9 @@ class ResponseService extends Component
     /**
      * Sets store values.
      */
-    public function store(array|string $values): void
+    public function store(array $values): void
     {
-        if (is_array($values)) {
-            $values = Json::encode($values);
-        }
-
-        $this->addEvent(SignalEvent::class, '', ['store' => $values]);
+        $this->addEvent(SignalEvent::class, '', ['store' => Json::encode($values)]);
     }
 
     /**

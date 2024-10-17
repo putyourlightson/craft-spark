@@ -9,5 +9,8 @@ use craft\base\Model;
 
 class SettingsModel extends Model
 {
+    /**
+     * Whether to register the Datastar script on the front-end.
+     */
     public bool $registerScript = true;
 }
