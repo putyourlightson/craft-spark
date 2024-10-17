@@ -16,6 +16,7 @@ use putyourlightson\datastar\events\FragmentEvent;
 use putyourlightson\datastar\events\RedirectEvent;
 use putyourlightson\datastar\events\SignalEvent;
 use putyourlightson\spark\models\ConfigModel;
+use putyourlightson\spark\models\StoreModel;
 use Throwable;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
@@ -34,11 +35,17 @@ class ResponseService extends Component
     {
         $config = $this->getValidatedConfig($config);
         Craft::$app->getSites()->setCurrentSite($config->siteId);
+        $store = new StoreModel($store);
         $variables = array_merge(['store' => $store], $config->variables);
 
         $content = $this->renderTemplate($config->template, $variables);
+
+        if (!empty($store->getModifiedValues())) {
+            $this->store($store->getModifiedValues());
+        }
+
         if (!empty($content)) {
-            $this->addEvent(FragmentEvent::class, $content);
+            $this->fragment($content);
         }
 
         $output = [];
@@ -47,6 +54,14 @@ class ResponseService extends Component
         }
 
         return implode('', $output);
+    }
+
+    /**
+     * Sets fhe fragment.
+     */
+    public function fragment(string $content): void
+    {
+        $this->addEvent(FragmentEvent::class, $content);
     }
 
     /**
