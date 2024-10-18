@@ -21,5 +21,14 @@ return [
     '*' => [
         // Whether to register the Datastar script on the front-end.
         //'registerScript' => true,
+
+        // The fragment options to override the Datastar defaults. Null values will be ignored.
+        // https://data-star.dev/reference/plugins_backend#datastar-fragment
+        //'defaultFragmentOptions' => [
+        //    'selector' => null,
+        //    'merge' => null,
+        //    'settle' => null,
+        //    'vt' => null,
+        //];
     ],
 ];

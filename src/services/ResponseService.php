@@ -16,6 +16,7 @@ use putyourlightson\datastar\events\FragmentEvent;
 use putyourlightson\datastar\events\RedirectEvent;
 use putyourlightson\datastar\events\SignalEvent;
 use putyourlightson\spark\models\ConfigModel;
+use putyourlightson\spark\Spark;
 use Throwable;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
@@ -40,7 +41,7 @@ class ResponseService extends Component
 
         $content = $this->renderTemplate($config->template, $variables);
         if (!empty($content)) {
-            $this->addEvent(FragmentEvent::class, $content);
+            $this->fragment($content);
         }
 
         $output = [];
@@ -49,6 +50,17 @@ class ResponseService extends Component
         }
 
         return implode('', $output);
+    }
+
+    /**
+     * Merges a fragment into the DOM.
+     */
+    public function fragment(string $content, array $options): void
+    {
+        $this->addEvent(FragmentEvent::class, $content, array_merge(
+            Spark::$plugin->settings->getNonEmptyDefaultFragmentOptions(),
+            $options
+        ));
     }
 
     /**

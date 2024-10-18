@@ -17,7 +17,7 @@ use putyourlightson\spark\twigextensions\SparkTwigExtension;
  */
 class Spark extends Plugin
 {
-    public const DATASTAR_VERSION = '0.19.2';
+    public const DATASTAR_VERSION = '0.19.3';
 
     /**
      * @inerhitdoc
