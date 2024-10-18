@@ -25,7 +25,7 @@ use yii\web\Response;
 class ResponseService extends Component
 {
     /**
-     * @var EventInterface[] The events to send.
+     * @var EventInterface[] The Datastar events to send in the response.
      */
     private array $events = [];
 
@@ -35,12 +35,20 @@ class ResponseService extends Component
     public function process(string $config, array $store): string
     {
         $config = $this->getValidatedConfig($config);
-        $store = new StoreModel($store);
-        $variables = array_merge(['store' => $store], $config->variables);
-
         Craft::$app->getSites()->setCurrentSite($config->siteId);
 
+        $store = new StoreModel($store);
+        $variables = array_merge(
+            [Spark::$plugin->settings->storeVariableName => $store],
+            $config->variables,
+        );
+
         $content = $this->renderTemplate($config->template, $variables);
+
+        if (!empty($store->getModifiedValues())) {
+            $this->store($store->getModifiedValues());
+        }
+
         if (!empty($content)) {
             $this->fragment($content);
         }

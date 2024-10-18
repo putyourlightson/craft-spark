@@ -7,9 +7,13 @@ namespace putyourlightson\spark;
 
 use Craft;
 use craft\base\Plugin;
+use nystudio107\autocomplete\events\DefineGeneratorValuesEvent;
+use nystudio107\autocomplete\generators\AutocompleteTwigExtensionGenerator;
 use putyourlightson\spark\models\SettingsModel;
+use putyourlightson\spark\models\StoreModel;
 use putyourlightson\spark\services\ResponseService;
 use putyourlightson\spark\twigextensions\SparkTwigExtension;
+use yii\base\Event;
 
 /**
  * @property-read ResponseService $response
@@ -48,6 +52,7 @@ class Spark extends Plugin
 
         $this->registerTwigExtension();
         $this->registerScript();
+        $this->registerAutocompleteEvent();
     }
 
     /**
@@ -76,5 +81,19 @@ class Spark extends Plugin
                 'defer' => true,
             ]);
         }
+    }
+
+    private function registerAutocompleteEvent(): void
+    {
+        if (!class_exists(AutocompleteTwigExtensionGenerator::class)) {
+            return;
+        }
+
+        Event::on(AutocompleteTwigExtensionGenerator::class,
+            AutocompleteTwigExtensionGenerator::EVENT_BEFORE_GENERATE,
+            function(DefineGeneratorValuesEvent $event) {
+                $event->values[$this->settings->storeVariableName] = 'new \\' . StoreModel::class . '()';
+            }
+        );
     }
 }

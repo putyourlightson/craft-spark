@@ -55,14 +55,6 @@ class SparkVariable
     }
 
     /**
-     * Sets store values.
-     */
-    public function store(array $values): void
-    {
-        Spark::$plugin->response->store($values);
-    }
-
-    /**
      * Removes elements that match the selector from the DOM.
      */
     public function remove(string $selector): void

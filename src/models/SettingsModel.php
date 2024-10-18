@@ -15,6 +15,11 @@ class SettingsModel extends Model
     public bool $registerScript = true;
 
     /**
+     * The name of the store variable that will be injected into Spark templates.
+     */
+    public string $storeVariableName = 'store';
+
+    /**
      * The fragment options to override the Datastar defaults. Null values will be ignored.
      * https://data-star.dev/reference/plugins_backend#datastar-fragment
      *
