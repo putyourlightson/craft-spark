@@ -8,11 +8,12 @@ namespace putyourlightson\spark\models;
 class StoreModel
 {
     private array $values;
-    private array $modifiedValues = [];
+    private array $modifiedValues;
 
     public function __construct(array $values)
     {
         $this->values = $values;
+        $this->modifiedValues = [];
     }
 
     public function __get(string $name)
@@ -32,21 +33,33 @@ class StoreModel
         return null;
     }
 
+    /**
+     * Returns the value in the store.
+     */
     public function get(string $name): mixed
     {
         return $this->values[$name] ?? null;
     }
 
+    /**
+     * Returns the values in the store.
+     */
     public function getValues(): array
     {
         return $this->values;
     }
 
+    /**
+     * Returns the modified values in the store.
+     */
     public function getModifiedValues(): array
     {
         return $this->modifiedValues;
     }
 
+    /**
+     * Sets a value in the store.
+     */
     public function set(string $name, mixed $value): static
     {
         $this->values[$name] = $value;
@@ -55,6 +68,9 @@ class StoreModel
         return $this;
     }
 
+    /**
+     * Sets multiple values in the store.
+     */
     public function setValues(array $values): static
     {
         foreach ($values as $name => $value) {
