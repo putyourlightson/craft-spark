@@ -65,7 +65,7 @@ class Spark extends Plugin
 
     private function registerTwigExtension(): void
     {
-        Craft::$app->view->registerTwigExtension(new SparkTwigExtension());
+        Craft::$app->getView()->registerTwigExtension(new SparkTwigExtension());
     }
 
     private function registerScript(): void

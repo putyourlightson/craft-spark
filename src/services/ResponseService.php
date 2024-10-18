@@ -81,7 +81,7 @@ class ResponseService extends Component
     }
 
     /**
-     * Removes elements that match the selector from the DOM.
+     * Removes all elements that match the selector from the DOM.
      */
     public function remove(string $selector): void
     {

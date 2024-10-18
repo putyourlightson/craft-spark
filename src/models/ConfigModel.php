@@ -12,19 +12,20 @@ use craft\helpers\Json;
 class ConfigModel extends Model
 {
     public ?int $siteId = null;
-    public string $method = '';
     public string $template = '';
     public array $variables = [];
+    public bool $sendCsrfToken = false;
     public ?string $csrfToken = null;
 
     protected function defineRules(): array
     {
         return [
-            [['siteId', 'method', 'template'], 'required'],
+            [['siteId', 'template'], 'required'],
             [['siteId'], 'integer'],
-            [['method'], 'in', 'range' => ['get', 'post', 'put', 'patch', 'delete']],
             [['template'], 'string'],
             [['variables'], 'validateVariables'],
+            [['sendCsrfToken'], 'boolean'],
+            [['csrfToken'], 'string'],
         ];
     }
 
@@ -37,7 +38,7 @@ class ConfigModel extends Model
     {
         foreach ($this->variables as $value) {
             if (is_object($value) || (is_array($value) && !$this->validateVariables($value))) {
-                $this->addError($attribute, Craft::t('spark', 'Variables passed into `spark.' . $this->method . '()` cannot contain objects.'));
+                $this->addError($attribute, Craft::t('spark', 'Variables passed into `sparkUrl()` cannot contain objects.'));
 
                 return false;
             }
@@ -51,6 +52,10 @@ class ConfigModel extends Model
      */
     public function getHashed(): string
     {
+        if ($this->sendCsrfToken === true) {
+            $this->csrfToken = Craft::$app->getRequest()->csrfToken;
+        }
+
         $attributes = array_filter([
             'siteId' => $this->siteId,
             'template' => $this->template,
