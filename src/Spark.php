@@ -85,7 +85,7 @@ class Spark extends Plugin
 
     private function registerAutocompleteEvent(): void
     {
-        if (!class_exists(AutocompleteTwigExtensionGenerator::class)) {
+        if (!class_exists('nystudio107\autocomplete\generators\AutocompleteTwigExtensionGenerator')) {
             return;
         }
 

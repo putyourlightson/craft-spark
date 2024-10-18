@@ -11,7 +11,8 @@
   },
   "require-dev": {
     "craftcms/ecs": "dev-main",
-    "craftcms/phpstan": "dev-main"
+    "craftcms/phpstan": "dev-main",
+    "nystudio107/craft-autocomplete": "^1.12"
   },
   "autoload": {
     "psr-4": {
