@@ -8,6 +8,7 @@ namespace putyourlightson\spark\variables;
 use Craft;
 use craft\helpers\UrlHelper;
 use putyourlightson\spark\models\ConfigModel;
+use putyourlightson\spark\models\ConsoleModel;
 use putyourlightson\spark\Spark;
 use yii\web\BadRequestHttpException;
 
@@ -80,9 +81,9 @@ class SparkVariable
     /**
      * Returns a console variable for logging messages to the console.
      */
-    public function console(): ConsoleVariable
+    public function console(): ConsoleModel
     {
-        return new ConsoleVariable();
+        return new ConsoleModel();
     }
 
     private function getMethodUrl(string $method, string $template, array $variables = []): string

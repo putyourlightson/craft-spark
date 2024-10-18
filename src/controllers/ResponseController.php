@@ -41,7 +41,7 @@ class ResponseController extends Controller
         return $this->response;
     }
 
-    private function getStoreParams()
+    private function getStoreParams(): array
     {
         if ($this->request->getIsGet()) {
             $param = $this->request->getParam('datastar', []);

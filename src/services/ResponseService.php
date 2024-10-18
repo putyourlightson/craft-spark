@@ -16,6 +16,7 @@ use putyourlightson\datastar\events\FragmentEvent;
 use putyourlightson\datastar\events\RedirectEvent;
 use putyourlightson\datastar\events\SignalEvent;
 use putyourlightson\spark\models\ConfigModel;
+use putyourlightson\spark\models\StoreModel;
 use putyourlightson\spark\Spark;
 use Throwable;
 use yii\web\BadRequestHttpException;
@@ -34,10 +35,10 @@ class ResponseService extends Component
     public function process(string $config, array $store): string
     {
         $config = $this->getValidatedConfig($config);
-        Craft::$app->getSites()->setCurrentSite($config->siteId);
+        $store = new StoreModel($store);
+        $variables = array_merge(['store' => $store], $config->variables);
 
-        // Merge in the config variables so they override any store params with the same names.
-        $variables = array_merge($store, $config->variables);
+        Craft::$app->getSites()->setCurrentSite($config->siteId);
 
         $content = $this->renderTemplate($config->template, $variables);
         if (!empty($content)) {
@@ -55,7 +56,7 @@ class ResponseService extends Component
     /**
      * Merges a fragment into the DOM.
      */
-    public function fragment(string $content, array $options): void
+    public function fragment(string $content, array $options = []): void
     {
         $this->addEvent(FragmentEvent::class, $content, array_merge(
             Spark::$plugin->settings->getNonEmptyDefaultFragmentOptions(),

@@ -3,11 +3,11 @@
  * @copyright Copyright (c) PutYourLightsOn
  */
 
-namespace putyourlightson\spark\variables;
+namespace putyourlightson\spark\models;
 
 use putyourlightson\spark\Spark;
 
-class ConsoleVariable
+class ConsoleModel
 {
     public function debug(string $message): void
     {
