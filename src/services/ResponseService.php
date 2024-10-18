@@ -97,7 +97,7 @@ class ResponseService extends Component
     }
 
     /**
-     * Outputs a message to the console.
+     * Outputs a message to the browser console.
      */
     public function console(string $message, string $mode = 'log'): void
     {

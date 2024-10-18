@@ -27,7 +27,7 @@ class SparkVariable
     }
 
     /**
-     * Returns a console variable for logging messages to the console.
+     * Returns a console variable for logging messages to the browser console.
      */
     public function console(): ConsoleModel
     {
