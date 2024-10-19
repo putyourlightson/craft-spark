@@ -30,12 +30,4 @@ class SettingsModel extends Model
         'settle' => null,
         'vt' => null,
     ];
-
-    /**
-     * Returns the non-empty default fragment options.
-     */
-    public function getNonEmptyDefaultFragmentOptions(): array
-    {
-        return array_filter($this->defaultFragmentOptions);
-    }
 }

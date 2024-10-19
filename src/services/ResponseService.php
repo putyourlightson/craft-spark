@@ -16,6 +16,7 @@ use putyourlightson\datastar\events\FragmentEvent;
 use putyourlightson\datastar\events\RedirectEvent;
 use putyourlightson\datastar\events\SignalEvent;
 use putyourlightson\spark\models\ConfigModel;
+use putyourlightson\spark\models\FragmentOptionsModel;
 use putyourlightson\spark\models\StoreModel;
 use putyourlightson\spark\Spark;
 use Throwable;
@@ -66,10 +67,12 @@ class ResponseService extends Component
      */
     public function fragment(string $content, array $options = []): void
     {
-        $this->addEvent(FragmentEvent::class, $content, array_merge(
-            Spark::$plugin->settings->getNonEmptyDefaultFragmentOptions(),
+        $fragmentOptions = new FragmentOptionsModel(array_merge(
+            Spark::$plugin->settings->defaultFragmentOptions,
             $options
         ));
+
+        $this->addEvent(FragmentEvent::class, $content, $fragmentOptions->getOptions());
     }
 
     /**
