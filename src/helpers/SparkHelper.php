@@ -19,8 +19,8 @@ class SparkHelper
      */
     public static function spark(string $template, array $variables = [], string $method = 'get'): string
     {
-        $method = static::getValidMethod($method);
-        $url = static::sparkUrl($template, $variables, $method);
+        $method = self::getValidMethod($method);
+        $url = self::sparkUrl($template, $variables, $method);
 
         return "$$$method('$url')";
     }
@@ -34,7 +34,7 @@ class SparkHelper
             'siteId' => Craft::$app->getSites()->getCurrentSite()->id,
             'template' => $template,
             'variables' => $variables,
-            'method' => static::getValidMethod($method),
+            'method' => self::getValidMethod($method),
         ]);
 
         if (!$config->validate()) {
@@ -50,7 +50,7 @@ class SparkHelper
     {
         $method = strtolower($method);
         if (!in_array($method, static::ALLOWED_METHODS)) {
-            throw new SyntaxError('Method must be one of ' . implode(', ', static::ALLOWED_METHODS));
+            throw new SyntaxError('Method must be one of ' . implode(', ', self::ALLOWED_METHODS));
         }
 
         return $method;
