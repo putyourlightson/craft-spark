@@ -1,6 +1,6 @@
 {
   "name": "putyourlightson/craft-spark",
-  "description": "A real-time, template-driven hypermedia framework for Craft CMS.",
+  "description": "A real-time, template-driven hypermedia framework for Craft.",
   "version": "0.0.6",
   "type": "craft-plugin",
   "license": "proprietary",
