@@ -5,7 +5,7 @@
 
 namespace putyourlightson\spark\twigextensions;
 
-use putyourlightson\spark\helpers\SparkUrlHelper;
+use putyourlightson\spark\helpers\SparkHelper;
 use putyourlightson\spark\variables\SparkVariable;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
@@ -19,7 +19,8 @@ class SparkTwigExtension extends AbstractExtension implements GlobalsInterface
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('sparkUrl', [SparkUrlHelper::class, 'sparkUrl']),
+            new TwigFunction('spark', [SparkHelper::class, 'spark']),
+            new TwigFunction('sparkUrl', [SparkHelper::class, 'sparkUrl']),
         ];
     }
 

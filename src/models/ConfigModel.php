@@ -14,7 +14,7 @@ class ConfigModel extends Model
     public ?int $siteId = null;
     public string $template = '';
     public array $variables = [];
-    public bool $sendCsrfToken = false;
+    public string $method = 'get';
     public ?string $csrfToken = null;
 
     protected function defineRules(): array
@@ -22,10 +22,9 @@ class ConfigModel extends Model
         return [
             [['siteId', 'template'], 'required'],
             [['siteId'], 'integer'],
-            [['template'], 'string'],
+            [['template', 'method'], 'string'],
             [['variables'], 'validateVariables'],
-            [['sendCsrfToken'], 'boolean'],
-            [['csrfToken'], 'string'],
+            [['method'], 'in', 'range' => ['get', 'post', 'put', 'patch', 'delete']],
         ];
     }
 
@@ -52,7 +51,7 @@ class ConfigModel extends Model
      */
     public function getHashed(): string
     {
-        if ($this->sendCsrfToken === true) {
+        if ($this->method !== 'get') {
             $this->csrfToken = Craft::$app->getRequest()->csrfToken;
         }
 
