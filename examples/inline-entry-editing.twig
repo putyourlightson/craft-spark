@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <title>Spark Demo – Inline Entry Editing</title>
+    <meta charset="utf-8"/>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.13/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    {# https://tailwindcss.com/docs/container #}
+    <div class="container mx-auto max-w-3xl py-8">
+        <div id="alert"></div>
+        {# https://daisyui.com/components/table/ #}
+        <div class="overflow-x-auto mt-4">
+            <table data-store="{ entryId: 0, title: '' }" class="table table-pin-rows">
+                <thead>
+                    <tr>
+                        <th class="w-10">ID</th>
+                        <th class="w-1/2">Title</th>
+                        <th>Author</th>
+                        <th class="w-48"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in craft.entries.all() %}
+                        <tr>
+                            <td>{{ entry.id }}</td>
+                            <td>
+                                <div data-show="$entryId != {{ entry.id }}">
+                                    <div id="title-{{ entry.id }}" data-value="{{ entry.title }}">
+                                        {{ entry.title }}
+                                    </div>
+                                </div>
+                                <div data-show="$entryId == {{ entry.id }}" style="display: none;">
+                                    <input data-on-keydown.key_enter="(~save).click()" type="text" data-model="title" class="input input-bordered w-full">
+                                </div>
+                            </td>
+                            <td>{{ entry.author.username }}</td>
+                            <td>
+                                <button data-on-click="$entryId = {{ entry.id }}; $title = document.getElementById('title-{{ entry.id }}').dataset.value;" data-show="$entryId != {{ entry.id }}" class="btn">
+                                    Edit
+                                </button>
+                                <button data-on-click="$entryId = 0" data-show="$entryId == {{ entry.id }}" class="btn" style="display: none;">
+                                    Cancel
+                                </button>
+                                <button data-ref="save" data-on-click="confirm('Are you sure?') && {{ spark('_spark/save-entry.twig', method: 'post') }}" data-show="$entryId == {{ entry.id }}" class="btn btn-primary" style="display: none;">
+                                    Save
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
