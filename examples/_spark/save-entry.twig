@@ -1,10 +1,7 @@
 {% set response = craft.app.runAction('entries/save-entry') %}
 {% if response.isSuccessful %}
-    <div id="title-{{ store.entryId }}" data-value="{{ store.title }}">
-        {{ store.title }}
-    </div>
     {# https://daisyui.com/components/alert/#success-color #}
-    <div id="alert" role="alert" class="alert alert-success">
+    <div id="alert" data-show="$alert" role="alert" class="alert alert-success">
         <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6 shrink-0 stroke-current"
@@ -20,10 +17,16 @@
             Entry successfully saved!
         </span>
     </div>
-    {% do store.set('entryId', 0) %}
+    <div id="title-{{ store.entryId }}">
+        {{ store.title }}
+    </div>
+    <button id="edit-{{ store.entryId }}" data-on-click="$entryId = {{ store.entryId }}; $title = '{{ store.title }}';" data-show="$entryId != {{ store.entryId }}" class="btn">
+        Edit
+    </button>
+    {% do store.entryId(0) %}
 {% else %}
     {# https://daisyui.com/components/alert/#error-color #}
-    <div id="alert" role="alert" class="alert alert-error">
+    <div id="alert" data-show="$alert" role="alert" class="alert alert-error">
         <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6 shrink-0 stroke-current"
@@ -43,3 +46,5 @@
         </span>
     </div>
 {% endif %}
+
+{% do store.alert(true) %}
