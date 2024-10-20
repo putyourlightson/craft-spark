@@ -20,11 +20,6 @@ class StoreModel
         return $this->get($name);
     }
 
-    public function __set(string $name, mixed $value)
-    {
-        return $this->set($name, $value);
-    }
-
     /**
      * This exists so that `store.{name}` and `store.{name}({value})` will work in Twig.
      */

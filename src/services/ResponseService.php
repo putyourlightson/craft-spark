@@ -35,14 +35,8 @@ class ResponseService extends Component
     public function process(string $config, array $store): string
     {
         $config = $this->getValidatedConfig($config);
-        Craft::$app->getSites()->setCurrentSite($config->siteId);
-
         $store = new StoreModel($store);
-        $variables = array_merge(
-            [Spark::$plugin->settings->storeVariableName => $store],
-            $config->variables,
-        );
-
+        $variables = $this->getMergedVariables($config, $store);
         $content = $this->renderTemplate($config->template, $variables);
 
         if (!empty($store->getModifiedValues())) {
@@ -133,6 +127,8 @@ class ResponseService extends Component
 
         $config = new ConfigModel(Json::decodeIfJson($data));
 
+        Craft::$app->getSites()->setCurrentSite($config->siteId);
+
         if ($config->csrfToken !== null) {
             Craft::$app->getRequest()->setBodyParams(array_merge(
                 Craft::$app->getRequest()->getBodyParams(),
@@ -141,6 +137,20 @@ class ResponseService extends Component
         }
 
         return $config;
+    }
+
+    private function getMergedVariables(ConfigModel $config, StoreModel $store): array
+    {
+        $storeVariableName = Spark::$plugin->settings->storeVariableName;
+
+        if (!empty($config->variables[$storeVariableName])) {
+            $this->throwException('Variable `' . $storeVariableName . '` is reserved. Use a different name or modify the store name using the `storeVariableName` config setting.');
+        }
+
+        return array_merge(
+            $config->variables,
+            [$storeVariableName => $store],
+        );
     }
 
     private function renderTemplate(string $template, array $variables): string
