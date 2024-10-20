@@ -34,9 +34,12 @@ class ResponseService extends Component
      */
     public function process(string $config, array $store): string
     {
-        $config = $this->getValidatedConfig($config);
+        $config = $this->getConfigForResponse($config);
         $store = new StoreModel($store);
-        $variables = $this->getMergedVariables($config, $store);
+        $variables = array_merge(
+            [Spark::$plugin->settings->storeVariableName => $store],
+            $config->variables,
+        );
         $content = $this->renderTemplate($config->template, $variables);
 
         if (!empty($store->getModifiedValues())) {
@@ -47,6 +50,14 @@ class ResponseService extends Component
             $this->fragment($content);
         }
 
+        return $this->getEventOutput();
+    }
+
+    /**
+     * Returns the output of all events.
+     */
+    public function getEventOutput(): string
+    {
         $output = [];
         foreach ($this->events as $event) {
             $output[] = $event->getOutput();
@@ -118,7 +129,7 @@ class ResponseService extends Component
         throw new BadRequestHttpException($exception);
     }
 
-    private function getValidatedConfig(string $config): ConfigModel
+    private function getConfigForResponse(string $config): ConfigModel
     {
         $data = Craft::$app->getSecurity()->validateData($config);
         if ($data === false) {
@@ -126,7 +137,6 @@ class ResponseService extends Component
         }
 
         $config = new ConfigModel(Json::decodeIfJson($data));
-
         Craft::$app->getSites()->setCurrentSite($config->siteId);
 
         if ($config->csrfToken !== null) {
@@ -137,20 +147,6 @@ class ResponseService extends Component
         }
 
         return $config;
-    }
-
-    private function getMergedVariables(ConfigModel $config, StoreModel $store): array
-    {
-        $storeVariableName = Spark::$plugin->settings->storeVariableName;
-
-        if (!empty($config->variables[$storeVariableName])) {
-            $this->throwException('Variable `' . $storeVariableName . '` is reserved. Use a different name or modify the store name using the `storeVariableName` config setting.');
-        }
-
-        return array_merge(
-            $config->variables,
-            [$storeVariableName => $store],
-        );
     }
 
     private function renderTemplate(string $template, array $variables): string

@@ -8,6 +8,7 @@ namespace putyourlightson\spark\models;
 use Craft;
 use craft\base\Model;
 use craft\helpers\Json;
+use putyourlightson\spark\Spark;
 
 class ConfigModel extends Model
 {
@@ -35,9 +36,17 @@ class ConfigModel extends Model
      */
     public function validateVariables(mixed $attribute): bool
     {
-        foreach ($this->variables as $value) {
+        $storeVariableName = Spark::$plugin->settings->storeVariableName;
+
+        foreach ($this->variables as $key => $value) {
+            if ($key === $storeVariableName) {
+                $this->addError($attribute, Craft::t('spark', 'Variable `' . $storeVariableName . '` is reserved. Use a different name or modify the name of the store variable using the `storeVariableName` config setting.'));
+
+                return false;
+            }
+
             if (is_object($value) || (is_array($value) && !$this->validateVariables($value))) {
-                $this->addError($attribute, Craft::t('spark', 'Variables passed into `sparkUrl()` cannot contain objects.'));
+                $this->addError($attribute, Craft::t('spark', 'Variable `' . $key . '` is an object, which is a forbidden variable type in the context of a Spark request.'));
 
                 return false;
             }
