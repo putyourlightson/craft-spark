@@ -8,12 +8,11 @@ namespace putyourlightson\spark\models;
 class StoreModel
 {
     private array $values;
-    private array $modifiedValues;
+    private array $modifiedValues = [];
 
     public function __construct(array $values)
     {
         $this->values = $values;
-        $this->modifiedValues = [];
     }
 
     public function __get(string $name)
@@ -21,16 +20,21 @@ class StoreModel
         return $this->get($name);
     }
 
+    public function __set(string $name, mixed $value)
+    {
+        return $this->set($name, $value);
+    }
+
     /**
-     * This exists so that `store.{name}` will work in Twig.
+     * This exists so that `store.{name}` and `store.{name}({value})` will work in Twig.
      */
-    public function __call(string $name, array $arguments): mixed
+    public function __call(string $name, array $arguments)
     {
         if (empty($arguments)) {
             return $this->get($name);
         }
 
-        return null;
+        return $this->set($name, $arguments[0]);
     }
 
     /**
