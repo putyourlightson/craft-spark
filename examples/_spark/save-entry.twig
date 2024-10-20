@@ -20,7 +20,7 @@
     <div id="title-{{ store.entryId }}">
         {{ store.title }}
     </div>
-    <button id="edit-{{ store.entryId }}" data-on-click="$entryId = {{ store.entryId }}; $title = '{{ store.title }}';" data-show="$entryId != {{ store.entryId }}" class="btn">
+    <button id="edit-{{ store.entryId }}" data-on-click="$entryId = {{ store.entryId }}; $title = '{{ store.title }}'" data-show="$entryId != {{ store.entryId }}" class="btn">
         Edit
     </button>
     {% do store.entryId(0) %}

@@ -31,7 +31,7 @@
                                         {{ entry.title }}
                                     </div>
                                 </div>
-                                <div data-show="$entryId == {{ entry.id }}" style="display: none;">
+                                <div data-show="$entryId == {{ entry.id }}" style="display: none">
                                     <input data-on-keydown.key_enter="(~save).click()" type="text" data-model="title" class="input input-bordered w-full">
                                 </div>
                             </td>
@@ -40,10 +40,10 @@
                                 <button id="edit-{{ entry.id }}" data-on-click="$alert = false; $entryId = {{ entry.id }}; $title = '{{ entry.title }}'" data-show="$entryId != {{ entry.id }}" class="btn">
                                     Edit
                                 </button>
-                                <button data-on-click="$alert = false; $entryId = 0" data-show="$entryId == {{ entry.id }}" class="btn" style="display: none;">
+                                <button data-on-click="$alert = false; $entryId = 0" data-show="$entryId == {{ entry.id }}" class="btn" style="display: none">
                                     Cancel
                                 </button>
-                                <button data-ref="save" data-on-click="confirm('Are you sure?') && {{ spark('_spark/save-entry.twig', method: 'post') }}" data-show="$entryId == {{ entry.id }}" class="btn btn-primary" style="display: none;">
+                                <button data-ref="save" data-on-click="confirm('Are you sure?') && {{ spark('_spark/save-entry.twig', method: 'post') }}" data-show="$entryId == {{ entry.id }}" class="btn btn-primary" style="display: none">
                                     Save
                                 </button>
                             </td>
