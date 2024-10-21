@@ -64,6 +64,10 @@ class SparkHelper
      */
     public static function sparkStoreFromClass(string $class): string
     {
+        if (!class_exists($class)) {
+            throw new SyntaxError('Class `' . $class . '` could not be found. Ensure that the class exists and is autoloaded.');
+        }
+
         $reflection = new ReflectionClass($class);
         $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
         $defaultValues = $reflection->getDefaultProperties();
