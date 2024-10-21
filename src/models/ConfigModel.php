@@ -30,7 +30,7 @@ class ConfigModel extends Model
     }
 
     /**
-     * Validates that none of variables are objects recursively.
+     * Validates that none of the variables are objects, recursively.
      *
      * @used-by defineRules()
      */

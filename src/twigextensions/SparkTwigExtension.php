@@ -22,6 +22,8 @@ class SparkTwigExtension extends AbstractExtension implements GlobalsInterface
         return [
             new TwigFunction('spark', [SparkHelper::class, 'spark']),
             new TwigFunction('sparkUrl', [SparkHelper::class, 'sparkUrl']),
+            new TwigFunction('sparkStore', [SparkHelper::class, 'sparkStore']),
+            new TwigFunction('sparkStoreFromClass', [SparkHelper::class, 'sparkStoreFromClass']),
         ];
     }
 
