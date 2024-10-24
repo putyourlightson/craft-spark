@@ -1,4 +1,4 @@
-{% set response = craft.app.runAction('entries/save-entry') %}
+{% set response = spark.runAction('entries/save-entry') %}
 {% if response.isSuccessful %}
     {# https://daisyui.com/components/alert/#success-color #}
     <div id="alert" data-show="$alert" role="alert" class="alert alert-success">
