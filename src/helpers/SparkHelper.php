@@ -63,11 +63,15 @@ class SparkHelper
     /**
      * Returns a class’s public properties as a store.
      */
-    public static function sparkStoreFromClass(string $class): string
+    public static function sparkStoreFromClass(string $class, array $values = []): string
     {
-        $values = self::getClassPropertyValues($class);
+        $classValues = self::getClassPropertyValues($class);
 
-        return self::sparkStore($values);
+        foreach ($values as $key => $value) {
+            $classValues[$key] = $value;
+        }
+
+        return self::sparkStore($classValues);
     }
 
     private static function validateStoreValues(array $values): void
