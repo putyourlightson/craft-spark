@@ -64,20 +64,22 @@ class SparkHelper
      */
     public static function sparkStoreFromClass(string $class): string
     {
-        if (!class_exists($class)) {
-            throw new SyntaxError('Class `' . $class . '` could not be found. Ensure that the class exists and is autoloaded.');
-        }
-
-        $reflection = new ReflectionClass($class);
-        $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
-        $defaultValues = $reflection->getDefaultProperties();
-
-        $values = [];
-        foreach ($properties as $property) {
-            $values[$property->name] = $defaultValues[$property->name] ?? '';
-        }
+        $values = self::getClassPropertyValues($class);
 
         return self::sparkStore($values);
+    }
+
+    private static function validateStoreValues(array $values): void
+    {
+        foreach ($values as $value) {
+            if (is_object($value)) {
+                throw new SyntaxError('Store values cannot contain objects.');
+            }
+
+            if (is_array($value)) {
+                self::validateStoreValues($value);
+            }
+        }
     }
 
     private static function getValidMethod(string $method): string
@@ -90,16 +92,34 @@ class SparkHelper
         return $method;
     }
 
-    public static function validateStoreValues(array $values): void
+    private static function getClassPropertyValues(string $class): array
     {
-        foreach ($values as $value) {
-            if (is_object($value)) {
-                throw new SyntaxError('Store values cannot contain objects.');
-            }
-
-            if (is_array($value)) {
-                self::validateStoreValues($value);
-            }
+        if (!class_exists($class)) {
+            throw new SyntaxError('Class `' . $class . '` could not be found. Ensure that the class exists and is autoloaded.');
         }
+
+        $reflection = new ReflectionClass($class);
+        $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+        $defaultValues = $reflection->getDefaultProperties();
+
+        $values = [];
+        foreach ($properties as $property) {
+            $defaultValue = $defaultValues[$property->name] ?? '';
+            $values[$property->name] = self::getPropertyValue($property, $defaultValue);
+        }
+
+        return $values;
+    }
+
+    private static function getPropertyValue(ReflectionProperty $property, mixed $defaultValue): mixed
+    {
+        $type = $property->getType();
+        if ($type->isBuiltin()) {
+            return $defaultValue;
+        }
+
+        $class = $type->getName();
+
+        return self::getClassPropertyValues($class);
     }
 }
