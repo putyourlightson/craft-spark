@@ -7,9 +7,15 @@ namespace putyourlightson\spark\variables;
 
 use putyourlightson\spark\models\ConsoleModel;
 use putyourlightson\spark\Spark;
+use yii\web\Response;
 
 class SparkVariable
 {
+    public function runAction(string $route, array $params = []): Response
+    {
+        return Spark::$plugin->response->runAction($route, $params);
+    }
+
     /**
      * Removes all elements that match the selector from the DOM.
      */

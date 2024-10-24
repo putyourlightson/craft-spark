@@ -66,6 +66,17 @@ class ResponseService extends Component
         return implode('', $output);
     }
 
+    public function runAction(string $route, array $params = []): Response
+    {
+        Craft::$app->getRequest()->getHeaders()->set('Accept', 'application/json');
+        Craft::$app->getRequest()->setBodyParams(array_merge(
+            Craft::$app->getRequest()->getBodyParams(),
+            $params,
+        ));
+
+        return Craft::$app->runAction($route);
+    }
+
     /**
      * Merges a fragment into the DOM.
      */

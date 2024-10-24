@@ -27,9 +27,6 @@ class ResponseController extends Controller
         $config = $this->request->getParam('config');
         $store = $this->getStoreParams();
 
-        // Set the request to accept JSON so that controller actions return data in their responses.
-        $this->request->getHeaders()->set('Accept', 'application/json');
-
         $this->response->data = Spark::$plugin->response->process($config, $store);
         $this->response->format = Response::FORMAT_RAW;
 
