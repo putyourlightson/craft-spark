@@ -10,6 +10,7 @@ use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use putyourlightson\spark\models\ConfigModel;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionProperty;
 use Twig\Error\SyntaxError;
 
@@ -114,6 +115,10 @@ class SparkHelper
     private static function getPropertyValue(ReflectionProperty $property, mixed $defaultValue): mixed
     {
         $type = $property->getType();
+        if (!($type instanceof ReflectionNamedType)) {
+            return $defaultValue;
+        }
+
         if ($type->isBuiltin()) {
             return $defaultValue;
         }
