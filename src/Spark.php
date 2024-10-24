@@ -21,7 +21,7 @@ use yii\base\Event;
  */
 class Spark extends Plugin
 {
-    public const DATASTAR_VERSION = '0.19.5';
+    public const DATASTAR_VERSION = '0.19.8';
 
     /**
      * @inerhitdoc
