@@ -11,6 +11,9 @@ use yii\web\Response;
 
 class SparkVariable
 {
+    /**
+     * Runs an action and returns the response.
+     */
     public function runAction(string $route, array $params = []): Response
     {
         return Spark::$plugin->response->runAction($route, $params);

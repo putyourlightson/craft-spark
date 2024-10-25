@@ -27,6 +27,11 @@ class ResponseController extends Controller
         $config = $this->request->getParam('config');
         $store = $this->getStoreParams();
 
+        // Clear out params to prevent them from being processed controller actions.
+        $this->request->setQueryParams([]);
+        $this->request->setBodyParams([]);
+
+        // Process the response.
         $this->response->data = Spark::$plugin->response->process($config, $store);
         $this->response->format = Response::FORMAT_RAW;
 

@@ -30,16 +30,25 @@ class ResponseService extends Component
     private array $events = [];
 
     /**
+     * @var string|null The CSRF token to include in the response.
+     */
+    private ?string $csrfToken = null;
+
+    /**
      * Processes the response and returns the event output.
      */
     public function process(string $config, array $store): string
     {
         $config = $this->getConfigForResponse($config);
+        Craft::$app->getSites()->setCurrentSite($config->siteId);
+        $this->csrfToken = $config->csrfToken;
+
         $store = new StoreModel($store);
         $variables = array_merge(
             [Spark::$plugin->settings->storeVariableName => $store],
             $config->variables,
         );
+
         $content = $this->renderTemplate($config->template, $variables);
 
         if (!empty($store->getModifiedValues())) {
@@ -66,15 +75,21 @@ class ResponseService extends Component
         return implode('', $output);
     }
 
+    /**
+     * Runs an action and returns the response.
+     */
     public function runAction(string $route, array $params = []): Response
     {
-        Craft::$app->getRequest()->getHeaders()->set('Accept', 'application/json');
-        Craft::$app->getRequest()->setBodyParams(array_merge(
-            Craft::$app->getRequest()->getBodyParams(),
-            $params,
-        ));
+        if ($this->csrfToken !== null) {
+            $params[Craft::$app->getRequest()->csrfParam] = $this->csrfToken;
+        }
 
-        return Craft::$app->runAction($route);
+        Craft::$app->getRequest()->getHeaders()->set('Accept', 'application/json');
+        Craft::$app->getRequest()->setBodyParams($params);
+        $response = Craft::$app->runAction($route);
+        Craft::$app->getRequest()->setBodyParams([]);
+
+        return $response;
     }
 
     /**
@@ -147,17 +162,7 @@ class ResponseService extends Component
             $this->throwException('Submitted data was tampered.');
         }
 
-        $config = new ConfigModel(Json::decodeIfJson($data));
-        Craft::$app->getSites()->setCurrentSite($config->siteId);
-
-        if ($config->csrfToken !== null) {
-            Craft::$app->getRequest()->setBodyParams(array_merge(
-                Craft::$app->getRequest()->getBodyParams(),
-                [Craft::$app->getRequest()->csrfParam => $config->csrfToken]
-            ));
-        }
-
-        return $config;
+        return new ConfigModel(Json::decodeIfJson($data));
     }
 
     private function renderTemplate(string $template, array $variables): string
