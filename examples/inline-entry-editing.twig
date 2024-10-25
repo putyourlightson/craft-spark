@@ -32,7 +32,7 @@
                                     </div>
                                 </div>
                                 <div data-show="$entryId == {{ entry.id }}" style="display: none">
-                                    <input data-on-keydown.key_enter="(~save).click()" type="text" data-model="title" class="input input-bordered w-full">
+                                    <input data-on-keydown.key_enter="~save.click()" type="text" data-model="title" class="input input-bordered w-full">
                                 </div>
                             </td>
                             <td>{{ entry.author.username }}</td>
