@@ -80,14 +80,23 @@ class ResponseService extends Component
      */
     public function runAction(string $route, array $params = []): Response
     {
+        $request = Craft::$app->getRequest();
+        $request->getHeaders()->set('Accept', 'application/json');
+
         if ($this->csrfToken !== null) {
-            $params[Craft::$app->getRequest()->csrfParam] = $this->csrfToken;
+            $params[$request->csrfParam] = $this->csrfToken;
         }
 
-        Craft::$app->getRequest()->getHeaders()->set('Accept', 'application/json');
-        Craft::$app->getRequest()->setBodyParams($params);
+        if ($request->getIsGet()) {
+            $request->setQueryParams($params);
+        } else {
+            $request->setBodyParams($params);
+        }
+
         $response = Craft::$app->runAction($route);
-        Craft::$app->getRequest()->setBodyParams([]);
+
+        $request->setQueryParams([]);
+        $request->setBodyParams([]);
 
         return $response;
     }
