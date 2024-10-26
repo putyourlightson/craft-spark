@@ -51,10 +51,6 @@ class ResponseService extends Component
 
         $content = $this->renderTemplate($config->template, $variables);
 
-        if (!empty($store->getModifiedValues())) {
-            $this->store($store->getModifiedValues());
-        }
-
         if (!empty($content)) {
             $this->fragment($content);
         }

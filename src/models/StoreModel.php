@@ -5,10 +5,11 @@
 
 namespace putyourlightson\spark\models;
 
+use putyourlightson\spark\Spark;
+
 class StoreModel
 {
     private array $values;
-    private array $modifiedValues = [];
 
     public function __construct(array $values)
     {
@@ -49,20 +50,13 @@ class StoreModel
     }
 
     /**
-     * Returns the modified values in the store.
-     */
-    public function getModifiedValues(): array
-    {
-        return $this->modifiedValues;
-    }
-
-    /**
      * Sets a value in the store.
      */
     public function set(string $name, mixed $value): static
     {
         $this->values[$name] = $value;
-        $this->modifiedValues[$name] = $value;
+
+        Spark::$plugin->response->store([$name => $value]);
 
         return $this;
     }
@@ -73,8 +67,10 @@ class StoreModel
     public function setValues(array $values): static
     {
         foreach ($values as $name => $value) {
-            $this->set($name, $value);
+            $this->values[$name] = $value;
         }
+
+        Spark::$plugin->response->store($values);
 
         return $this;
     }
