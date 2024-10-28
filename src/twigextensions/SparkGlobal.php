@@ -3,13 +3,13 @@
  * @copyright Copyright (c) PutYourLightsOn
  */
 
-namespace putyourlightson\spark\variables;
+namespace putyourlightson\spark\twigextensions;
 
 use putyourlightson\spark\models\ConsoleModel;
 use putyourlightson\spark\Spark;
 use yii\web\Response;
 
-class SparkVariable
+class SparkGlobal
 {
     /**
      * Runs an action and returns the response.

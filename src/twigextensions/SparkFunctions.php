@@ -3,7 +3,7 @@
  * @copyright Copyright (c) PutYourLightsOn
  */
 
-namespace putyourlightson\spark\helpers;
+namespace putyourlightson\spark\twigextensions;
 
 use Craft;
 use craft\helpers\Json;
@@ -14,7 +14,7 @@ use ReflectionNamedType;
 use ReflectionProperty;
 use Twig\Error\SyntaxError;
 
-class SparkHelper
+class SparkFunctions
 {
     public const ALLOWED_METHODS = ['get', 'post', 'put', 'patch', 'delete'];
 
