@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-GB" data-theme="dark">
 <head>
-    <title>Two-way Binding Web Component</title>
+    <title>Two-way Binding Function</title>
     <meta charset="utf-8"/>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.13/dist/full.min.css" rel="stylesheet" type="text/css"/>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -9,10 +9,10 @@
 <body>
     {# https://tailwindcss.com/docs/container #}
     <div class="container mx-auto max-w-xl py-16">
-        <div data-store="{name: '', reversed: ''}" class="flex flex-col space-y-8">
+        <div data-store="{name: '', reversed: ''}" data-on-reverse.window="$reversed = event.detail.value" class="flex flex-col space-y-8">
             <div class="space-y-2">
                 <label>Name</label>
-                <input data-model="name" class="input input-bordered w-full">
+                <input data-model="name" data-on-input="reverse($name)" class="input input-bordered w-full">
             </div>
             <div class="space-y-2">
                 <label>Reversed</label>
@@ -20,10 +20,6 @@
                     <span data-text="$reversed"></span>
                 </div>
             </div>
-            <reverse-component
-                data-bind-name="$name"
-                data-on-reverse="$reversed = event.detail.value"
-            ></reverse-component>
         </div>
     </div>
 </body>
@@ -31,16 +27,8 @@
 
 {# The code below would normally be placed in its own JavaScript file. #}
 {% js %}
-class ReverseComponent extends HTMLElement {
-    static get observedAttributes() {
-        return ['name'];
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        const value = newValue ? newValue.split('').reverse().join('') : '';
-        this.dispatchEvent(new CustomEvent('reverse', {detail: {value}}));
-    }
+function reverse(input) {
+    const value = input ? input.split('').reverse().join('') : '';
+    window.dispatchEvent(new CustomEvent('reverse', {detail: {value}}));
 }
-
-customElements.define('reverse-component', ReverseComponent);
 {% endjs %}
