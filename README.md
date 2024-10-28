@@ -7,7 +7,23 @@
 
 ### A real-time, template-driven hypermedia framework for Craft CMS.
 
-Spark provides an integration between [Craft CMS](https://craftcms.com/) and [Datastar](https://data-star.dev), a JavaScript library that combines the core functionality of [Alpine JS](https://alpinejs.dev/) with that of [htmx](https://htmx.org/). It advocates a hypermedia-first approach, meaning that you won’t find history support, JavaScript execution in responses, nor any other “bells and whistles”. This is intentional. By embracing the simplicity of hypermedia, the encapsulation of web components (natively or using [Lit](https://lit.dev/)) and the optimised DOM operations of web browsers, you can build highly performant, hypermedia-driven web apps, without requiring a full-blown JavaScript framework.
+> [!WARNING]
+> **This plugin is in alpha and its API may change.**
+
+Spark is a free plugin for [Craft CMS](https://craftcms.com/) that allows you to create real-time front-ends driven by Twig templates. It aims to replace the need for front-end frameworks such as React, Vue.js and Alpine.js + htmx, and instead lets you manage state and run logic all within your Twig templates.
+
+With Spark, you have the ability to define state and manipulate the DOM in real-time on the front-end, and modify parts of the DOM with templates rendered on the back-end. Use-cases for Spark are:
+
+- Live searching elements
+- Loading more elements / Infinite scroll
+- Paginating, ordering and filtering lists of elements
+- Submitting forms and running actions
+- Pretty much anything to do with reactive front-ends
+
+Spark is lightweight, performant and strongly opinionated about embracing hypermedia and removing front-end complexity. It can be used for anything from simple to complex use-cases.
+
+> [!NOTE]
+> Read [The Case for Spark](https://github.com/putyourlightson/craft-spark/discussions/2) and join in the discussion.
 
 ## Documentation
 
