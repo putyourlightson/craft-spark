@@ -7,8 +7,7 @@
 
 ### A real-time, template-driven hypermedia framework for Craft CMS.
 
-> [!WARNING]
-> **This plugin is in alpha and its API may change.**
+**This plugin is in alpha and its API may change.**
 
 Spark is a free plugin for [Craft CMS](https://craftcms.com/) that allows you to create real-time front-ends driven by Twig templates. It aims to replace the need for front-end frameworks such as React, Vue.js and Alpine.js + htmx, and instead lets you manage state and run logic all within your Twig templates.
 
@@ -22,8 +21,7 @@ With Spark, you have the ability to define state and manipulate the DOM in real-
 
 Spark is lightweight, performant and strongly opinionated about embracing hypermedia and removing front-end complexity. It can be used for anything from simple to complex use-cases.
 
-> [!NOTE]
-> Read [The Case for Spark](https://github.com/putyourlightson/craft-spark/discussions/2) and join in the discussion.
+Read [The Case for Spark](https://github.com/putyourlightson/craft-spark/discussions/2) and join in the discussion.
 
 ## Documentation
 
