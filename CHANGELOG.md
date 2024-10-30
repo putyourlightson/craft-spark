@@ -1,10 +1,11 @@
 # Release Notes for Spark
 
-## 1.0.0-alpha.2 - Unreleased
+## 1.0.0-alpha.2 - 2024-10-30
 
 ### Changed
 
 - Spark now requires Craft 5.0.0 or later.
+- The Datastar script is now packaged with the plugin, rather than served from a CDN.
 
 ## 1.0.0-alpha.1 - 2024-10-28
 

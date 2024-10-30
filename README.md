@@ -33,7 +33,7 @@ This plugin is licensed for free under the MIT License.
 
 ## Requirements
 
-This plugin requires [Craft CMS](https://craftcms.com/) 5.4.0 or later.
+This plugin requires [Craft CMS](https://craftcms.com/) 5.0.0 or later.
 
 ## Installation
 

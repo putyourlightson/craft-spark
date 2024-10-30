@@ -9,6 +9,7 @@ use Craft;
 use craft\base\Plugin;
 use nystudio107\autocomplete\events\DefineGeneratorValuesEvent;
 use nystudio107\autocomplete\generators\AutocompleteTwigExtensionGenerator;
+use putyourlightson\spark\assets\DatastarAssetBundle;
 use putyourlightson\spark\models\SettingsModel;
 use putyourlightson\spark\models\StoreModel;
 use putyourlightson\spark\services\ResponseService;
@@ -74,13 +75,11 @@ class Spark extends Plugin
             return;
         }
 
-        if (Craft::$app->getRequest()->getIsSiteRequest()) {
-            $url = 'https://cdn.jsdelivr.net/npm/@sudodevnull/datastar@' . self::DATASTAR_VERSION;
-            Craft::$app->getView()->registerJsFile($url, [
-                'type' => 'module',
-                'defer' => true,
-            ]);
-        }
+        $bundle = Craft::$app->getView()->registerAssetBundle(DatastarAssetBundle::class);
+
+        // Register the JS file explicitly so that it will be output when using template caching.
+        $url = Craft::$app->getView()->getAssetManager()->getAssetUrl($bundle, $bundle->js[0]);
+        Craft::$app->getView()->registerJsFile($url, $bundle->jsOptions);
     }
 
     private function registerAutocompleteEvent(): void
