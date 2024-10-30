@@ -6,8 +6,8 @@
   "license": "proprietary",
   "require": {
     "php": ">=8.2",
-    "craftcms/cms": "^5.4",
-    "putyourlightson/datastar-php": "1.0.0"
+    "craftcms/cms": "^5.0",
+    "putyourlightson/datastar-php": "1.0.1"
   },
   "require-dev": {
     "craftcms/ecs": "dev-main",
