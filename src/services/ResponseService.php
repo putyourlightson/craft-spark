@@ -46,7 +46,7 @@ class ResponseService extends Component
 
         $content = $this->renderTemplate($config->template, $variables);
 
-        // Output any remaining content
+        // Output any rendered content in a fragment event.
         if (!empty($content)) {
             $this->fragment($content);
         }
@@ -184,15 +184,15 @@ class ResponseService extends Component
 
     private function flushEvent(EventInterface $event): void
     {
-        // Capture inline content before ending output buffers
+        // Capture inline content before ending output buffers.
         $inlineContent = ob_get_contents();
 
-        // Clean and end all existing output buffers
+        // Clean and end all existing output buffers.
         while (ob_get_level() > 0) {
             ob_end_clean();
         }
 
-        // Output inline content as a fragment event
+        // Output inline content as a fragment event.
         if ($inlineContent !== false) {
             $fragment = new FragmentEvent();
             $fragment->content = $inlineContent;
@@ -203,8 +203,7 @@ class ResponseService extends Component
 
         flush();
 
-        // Start a new output buffer
+        // Start a new output buffer to capture any subsequent inline content.
         ob_start();
-        sleep(1);
     }
 }

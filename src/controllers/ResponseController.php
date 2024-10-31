@@ -36,11 +36,13 @@ class ResponseController extends Controller
         $this->response->getHeaders()->set('Cache-Control', 'no-cache');
         $this->response->getHeaders()->set('Connection', 'keep-alive');
 
-        // Disable buffering for Nginx
+        // Disable buffering for Nginx.
         // https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering
         $this->response->getHeaders()->set('X-Accel-Buffering', 'no');
 
         $this->response->format = Response::FORMAT_RAW;
+
+        // Stream the response.
         $this->response->stream = function() use ($config, $store) {
             return Spark::$plugin->response->stream($config, $store);
         };
