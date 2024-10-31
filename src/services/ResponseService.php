@@ -25,19 +25,14 @@ use yii\web\Response;
 class ResponseService extends Component
 {
     /**
-     * @var EventInterface[] The Datastar events to send in the response.
-     */
-    private array $events = [];
-
-    /**
      * @var string|null The CSRF token to include in the response.
      */
     private ?string $csrfToken = null;
 
     /**
-     * Processes the response and returns the event output.
+     * Streams the response and returns an empty array.
      */
-    public function process(string $config, array $store): string
+    public function stream(string $config, array $store): array
     {
         $config = $this->getConfigForResponse($config);
         Craft::$app->getSites()->setCurrentSite($config->siteId);
@@ -51,24 +46,12 @@ class ResponseService extends Component
 
         $content = $this->renderTemplate($config->template, $variables);
 
+        // Output any remaining content
         if (!empty($content)) {
             $this->fragment($content);
         }
 
-        return $this->getEventOutput();
-    }
-
-    /**
-     * Returns the output of all events.
-     */
-    public function getEventOutput(): string
-    {
-        $output = [];
-        foreach ($this->events as $event) {
-            $output[] = $event->getOutput();
-        }
-
-        return implode('', $output);
+        return [];
     }
 
     /**
@@ -108,7 +91,7 @@ class ResponseService extends Component
             $options
         ));
 
-        $this->addEvent(FragmentEvent::class, $content, $options);
+        $this->sendEvent(FragmentEvent::class, $content, $options);
     }
 
     /**
@@ -116,7 +99,7 @@ class ResponseService extends Component
      */
     public function store(array $values): void
     {
-        $this->addEvent(SignalEvent::class, '', ['store' => Json::encode($values)]);
+        $this->sendEvent(SignalEvent::class, '', ['store' => Json::encode($values)]);
     }
 
     /**
@@ -124,7 +107,7 @@ class ResponseService extends Component
      */
     public function remove(string $selector): void
     {
-        $this->addEvent(DeleteEvent::class, '', ['selector' => $selector]);
+        $this->sendEvent(DeleteEvent::class, '', ['selector' => $selector]);
     }
 
     /**
@@ -132,7 +115,7 @@ class ResponseService extends Component
      */
     public function redirect(string $uri): void
     {
-        $this->addEvent(RedirectEvent::class, $uri);
+        $this->sendEvent(RedirectEvent::class, $uri);
     }
 
     /**
@@ -140,7 +123,7 @@ class ResponseService extends Component
      */
     public function console(string $message, string $mode = 'log'): void
     {
-        $this->addEvent(ConsoleEvent::class, $message, ['mode' => $mode]);
+        $this->sendEvent(ConsoleEvent::class, $message, ['mode' => $mode]);
     }
 
     /**
@@ -183,7 +166,7 @@ class ResponseService extends Component
         }
     }
 
-    private function addEvent(string $class, string $content = '', array $options = []): void
+    private function sendEvent(string $class, string $content = '', array $options = []): void
     {
         /** @var EventInterface $event */
         $event = new $class();
@@ -196,6 +179,32 @@ class ResponseService extends Component
             $event->{$key} = $value;
         }
 
-        $this->events[] = $event;
+        $this->flushEvent($event);
+    }
+
+    private function flushEvent(EventInterface $event): void
+    {
+        // Capture inline content before ending output buffers
+        $inlineContent = ob_get_contents();
+
+        // Clean and end all existing output buffers
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        // Output inline content as a fragment event
+        if ($inlineContent !== false) {
+            $fragment = new FragmentEvent();
+            $fragment->content = $inlineContent;
+            echo $fragment->getOutput();
+        }
+
+        echo $event->getOutput();
+
+        flush();
+
+        // Start a new output buffer
+        ob_start();
+        sleep(1);
     }
 }

@@ -31,14 +31,19 @@ class ResponseController extends Controller
         $this->request->setQueryParams([]);
         $this->request->setBodyParams([]);
 
-        // Process the response.
-        $this->response->data = Spark::$plugin->response->process($config, $store);
-        $this->response->format = Response::FORMAT_RAW;
-
         // Set the response headers for the event stream.
         $this->response->getHeaders()->set('Content-Type', 'text/event-stream');
         $this->response->getHeaders()->set('Cache-Control', 'no-cache');
         $this->response->getHeaders()->set('Connection', 'keep-alive');
+
+        // Disable buffering for Nginx
+        // https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering
+        $this->response->getHeaders()->set('X-Accel-Buffering', 'no');
+
+        $this->response->format = Response::FORMAT_RAW;
+        $this->response->stream = function() use ($config, $store) {
+            return Spark::$plugin->response->stream($config, $store);
+        };
 
         return $this->response;
     }
