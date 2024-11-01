@@ -1,6 +1,6 @@
 # Release Notes for Spark
 
-## 1.0.0-alpha.3 - Unreleased
+## 1.0.0-alpha.3 - 2024-11-01
 
 ### Changed
 
