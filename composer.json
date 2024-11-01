@@ -7,7 +7,8 @@
   "require": {
     "php": ">=8.2",
     "craftcms/cms": "^5.0",
-    "putyourlightson/datastar-php": "1.0.1"
+    "putyourlightson/datastar-php": "1.0.1",
+    "putyourlightson/craft-spark-plug": "^1.0.0-alpha.1"
   },
   "require-dev": {
     "craftcms/ecs": "dev-main",
@@ -16,7 +17,7 @@
   },
   "autoload": {
     "psr-4": {
-      "putyourlightson\\spark\\": "src/"
+      "putyourlightson\\spark\\plugin\\": "src/"
     }
   },
   "extra": {
@@ -26,7 +27,7 @@
     "developerUrl": "https://putyourlightson.com/",
     "documentationUrl": "https://putyourlightson.com/plugins/spark",
     "changelogUrl": "https://raw.githubusercontent.com/putyourlightson/craft-spark/develop/CHANGELOG.md",
-    "class": "putyourlightson\\spark\\Spark"
+    "class": "putyourlightson\\spark\\plugin\\Plugin"
   },
   "scripts": {
     "check-cs": "ecs check --ansi",
@@ -34,13 +35,12 @@
     "phpstan": "phpstan --memory-limit=1G"
   },
   "config": {
-    "sort-packages": true,
-    "platform": {
-      "php": "8.2"
-    },
     "allow-plugins": {
-      "yiisoft/yii2-composer": true,
-      "craftcms/plugin-installer": true
-    }
+      "craftcms/plugin-installer": true,
+      "pestphp/pest-plugin": true,
+      "yiisoft/yii2-composer": true
+    },
+    "optimize-autoloader": true,
+    "sort-packages": true
   }
 }

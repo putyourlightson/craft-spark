@@ -4,6 +4,7 @@
 
 ### Changed
 
+- The Spark plugin is now powered by the [Spark Plug](https://github.com/putyourlightson/craft-spark-plug) module.
 - Events are now streamed to the browser as they are parsed, rather than all at once at the end of the request.
 
 ## 1.0.0-alpha.2 - 2024-10-30
