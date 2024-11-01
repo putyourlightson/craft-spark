@@ -3,7 +3,7 @@
   "description": "A real-time, template-driven hypermedia framework for Craft.",
   "version": "1.0.0-alpha.3",
   "type": "craft-plugin",
-  "license": "proprietary",
+  "license": "mit",
   "require": {
     "php": ">=8.2",
     "craftcms/cms": "^5.0",
