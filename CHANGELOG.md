@@ -1,5 +1,11 @@
 # Release Notes for Spark
 
+## 1.0.0-alpha.4 - 2024-11-02
+
+### Changed
+
+- Renamed “Spark Plug” to “Spark Module”.
+
 ## 1.0.0-alpha.3 - 2024-11-01
 
 ### Changed
