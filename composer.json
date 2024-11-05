@@ -1,13 +1,13 @@
 {
   "name": "putyourlightson/craft-spark",
   "description": "A real-time, template-driven hypermedia framework for Craft.",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "type": "craft-plugin",
   "license": "mit",
   "require": {
-    "php": ">=8.2",
+    "php": "^8.2",
     "craftcms/cms": "^5.0",
-    "putyourlightson/craft-spark-module": "^1.0.0-alpha.2"
+    "putyourlightson/craft-spark-module": "^1.0.0-alpha.3"
   },
   "require-dev": {
     "craftcms/ecs": "dev-main",
