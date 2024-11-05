@@ -7,6 +7,10 @@
 - Added support for dot notation when getting, setting and removing store values.
 - Added the ability to remove store values.
 
+### Fixed
+
+- Fixed the `redirect` event
+
 ### Changed
 
 - Control panel templates are now rendered in control panel action requests.
